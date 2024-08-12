@@ -1,7 +1,8 @@
 <script lang="ts">
   import {
     balanceStore,
-    commonTransactionsStore
+    commonTransactionsStore,
+    transactions
   } from '../core/transactions'
 </script>
 
@@ -16,7 +17,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each $commonTransactionsStore as transaction}
+      {#each $transactions as transaction}
         <tr>
           <td>{transaction.id}</td>
           <td>{transaction.transactionName}</td>

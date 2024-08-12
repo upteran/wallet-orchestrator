@@ -44,7 +44,7 @@ export const parseOreonBankCSV = (data: string): void => {
         balance
       })
 
-      console.log('parsedData', parsedData)
+      // console.log('parsedData', parsedData)
 
       commonTransactionsStore.set([
         ...commonTransactionsStore.get(),
