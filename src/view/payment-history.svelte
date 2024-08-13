@@ -1,15 +1,17 @@
 <script lang="ts">
   import {
     balanceStore,
-    commonTransactionsStore,
-    transactions
-  } from '../core/transactions'
+    transactionsHistory,
+    sortedTransactionsHistory
+  } from '../core/transactions/history-store'
 </script>
 
-{#if $commonTransactionsStore.length > 0}
+{#if $transactionsHistory.length > 0}
   <table>
     <thead>
       <tr>
+        <th>Transaction id</th>
+        <th>Transaction date</th>
         <th>Transaction Name</th>
         <th>Transaction Sum</th>
         <th>Type</th>
@@ -17,9 +19,10 @@
       </tr>
     </thead>
     <tbody>
-      {#each $transactions as transaction}
+      {#each $sortedTransactionsHistory as transaction}
         <tr>
           <td>{transaction.id}</td>
+          <td>{transaction.date}</td>
           <td>{transaction.transactionName}</td>
           <td>{transaction.transactionSum}</td>
           <td>{transaction.type}</td>

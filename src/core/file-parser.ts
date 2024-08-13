@@ -1,5 +1,5 @@
 import { atom } from 'nanostores'
-import { commonTransactionsStore, balanceStore } from './transactions'
+import { transactionsHistory, balanceStore } from './transactions/history-store'
 
 export const parsedDataStore = atom<Array<Record<string, unknown>>>([])
 
@@ -23,7 +23,6 @@ export const parseOreonBankCSV = (data: string): void => {
   const rows = data.split('\n').map(row => row.split(','))
 
   const transactions = rows.slice(4) // Skip the first 3 rows
-
   let lastBalance = balanceStore.get()
 
   transactions.forEach(transaction => {
@@ -46,10 +45,13 @@ export const parseOreonBankCSV = (data: string): void => {
 
       // console.log('parsedData', parsedData)
 
-      commonTransactionsStore.set([
-        ...commonTransactionsStore.get(),
+      // todo: update to class or function that creat object of transaction
+      // todo: save to store only after all will be parsed to optimize it
+      transactionsHistory.set([
+        ...transactionsHistory.get(),
         {
           id,
+          date: date,
           transactionName: name,
           transactionSum: sum,
           type,
@@ -61,6 +63,5 @@ export const parseOreonBankCSV = (data: string): void => {
     }
   })
 
-  balanceStore.set(lastBalance)
   parsedDataStore.set(parsedData)
 }
