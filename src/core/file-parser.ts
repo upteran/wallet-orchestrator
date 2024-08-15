@@ -4,7 +4,8 @@ import { transactionsHistory, balanceStore } from './transactions/history-store'
 export const parsedDataStore = atom<Array<Record<string, unknown>>>([])
 
 const csvParsers: Record<string, (data: string) => void> = {
-  'oreon-bank': (data: string) => parseOreonBankCSV(data)
+  csv1: (data: string) => parseCSV1(data),
+  csv2: (data: string) => parseCSV2(data)
   // Add other CSV type parsers here
 }
 
@@ -17,7 +18,7 @@ export const parseCSV = (data: string, csvType: string): void => {
   }
 }
 
-export const parseOreonBankCSV = (data: string): void => {
+export const parseCSV1 = (data: string): void => {
   const parsedData: Array<Record<string, unknown>> = []
 
   const rows = data.split('\n').map(row => row.split(','))
@@ -62,6 +63,61 @@ export const parseOreonBankCSV = (data: string): void => {
       lastBalance = +balance.toFixed(2) // Update the balance after each transaction
     }
   })
+
+  parsedDataStore.set(parsedData)
+}
+
+export const parseCSV2 = (data: string): void => {
+  // Split the CSV string into lines
+  const rows = data.split('\n')
+
+  // Initialize an array to hold the parsed result
+  const parsedData = []
+  const lastBalance = balanceStore.get()
+  const lines = rows.slice(10)
+  // Loop through each line and split it into fields
+  lines.forEach(line => {
+    // Split the line by comma, considering the possibility of commas inside quotes
+    const fields = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g)
+
+    console.log('fields', fields)
+    if (fields && fields.length >= 6) {
+      // todo: make null object
+      // Extract the values based on the CSV structure
+      const number = fields[0]
+      const date = fields[2]
+      const currency = fields[3]
+      const income = fields[4]
+        ? parseFloat(fields[4].replace(/"/g, '').replace(/,/g, ''))
+        : 0
+      const outcome = fields[4]
+        ? parseFloat(fields[5].replace(/"/g, '').replace(/,/g, ''))
+        : 0
+      const name = fields[7]
+
+      // Add the parsed data to the array
+      parsedData.push({ number, date, currency, income, outcome, name })
+
+      const sum = income || outcome
+      const type = outcome ? 'outcome' : 'income'
+      const balance = type === 'income' ? lastBalance + sum : lastBalance - sum
+
+      // todo: update to class or function that creat object of transaction
+      // todo: save to store only after all will be parsed to optimize it
+      transactionsHistory.set([
+        ...transactionsHistory.get(),
+        {
+          id: number,
+          date: date,
+          transactionName: name,
+          transactionSum: income || outcome,
+          type: income ? 'income' : 'outcome',
+          balanceAfterTransaction: +balance.toFixed(2)
+        }
+      ])
+    }
+  })
+  console.log('parsedData', parsedData)
 
   parsedDataStore.set(parsedData)
 }

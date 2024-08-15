@@ -2,7 +2,8 @@
   import { parseCSV } from './../core/file-parser'
 
   const csvTypes = [
-    { value: 'oreon-bank', label: 'Oreon Bank' }
+    { value: 'csv1', label: 'CSV 1' },
+    { value: 'csv2', label: 'CSV 2' },
     // Add other CSV types here
   ]
 
@@ -23,7 +24,6 @@
       reader.onload = function (e: ProgressEvent<FileReader>): void {
         if (e.target) {
           const csvContent = e.target.result as string
-
           // Use the generalized parser
           parseCSV(csvContent, selectedCsvType!)
         }
