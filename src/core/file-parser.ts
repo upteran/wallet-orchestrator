@@ -1,5 +1,6 @@
 import { atom } from 'nanostores'
 import { transactionsHistory, balanceStore } from './transactions/history-store'
+import { convertCurrency } from './currency'
 
 export const parsedDataStore = atom<Array<Record<string, unknown>>>([])
 
@@ -55,6 +56,10 @@ export const parseCSV1 = (data: string): void => {
           date: date,
           transactionName: name,
           transactionSum: sum,
+          sumInBalanceCurrency: sum,
+          category: '',
+          currency: 'EUR',
+          description: 'descr',
           type,
           balanceAfterTransaction: +balance.toFixed(2)
         }
@@ -70,6 +75,8 @@ export const parseCSV1 = (data: string): void => {
 export const parseCSV2 = (data: string): void => {
   // Split the CSV string into lines
   const rows = data.split('\n')
+  // todo: make convert to dynamic balance currency when it will be dynamic
+  const currencyConverter = convertCurrency({ from: 'AMD', to: 'EUR' })
 
   // Initialize an array to hold the parsed result
   const parsedData = []
@@ -94,11 +101,13 @@ export const parseCSV2 = (data: string): void => {
         ? parseFloat(fields[5].replace(/"/g, '').replace(/,/g, ''))
         : 0
       const name = fields[7]
+      const description = fields[8]
 
       // Add the parsed data to the array
-      parsedData.push({ number, date, currency, income, outcome, name })
+      parsedData.push({ number, date, currency, income, outcome, name, description })
 
-      const sum = income || outcome
+      const csvSum = income || outcome;
+      const sum = currencyConverter(csvSum)
       const type = outcome ? 'outcome' : 'income'
       const balance = type === 'income' ? lastBalance + sum : lastBalance - sum
 
@@ -110,7 +119,11 @@ export const parseCSV2 = (data: string): void => {
           id: number,
           date: date,
           transactionName: name,
-          transactionSum: income || outcome,
+          transactionSum: csvSum,
+          sumInBalanceCurrency: sum,
+          description,
+          currency,
+          category: '',
           type: income ? 'income' : 'outcome',
           balanceAfterTransaction: +balance.toFixed(2)
         }

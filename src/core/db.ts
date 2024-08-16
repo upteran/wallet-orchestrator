@@ -21,7 +21,7 @@ export const initDB = async () => {
     }
   })
 
-  return db;
+  return db
 }
 
 export const saveTransactions = async (transactions: Array<Transaction>) => {
@@ -43,4 +43,16 @@ export const loadTransactions = async () => {
   const allTransactions = await store.getAll()
   await tx.done
   return allTransactions
+}
+
+export async function updateTransactionInDB(transaction: Transaction) {
+  const tx = db.transaction('transactions', 'readwrite')
+  const store = tx.objectStore('transactions')
+
+  try {
+    await store.put(transaction)
+    await tx.done
+  } catch (error) {
+    console.error('Failed to update transaction in IndexedDB:', error)
+  }
 }

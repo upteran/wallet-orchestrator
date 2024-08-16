@@ -1,6 +1,6 @@
 import { atom, computed, onMount, task } from 'nanostores'
 import type { Transaction } from './models/transaction'
-import { initDB, loadTransactions, saveTransactions } from '../db'
+import { initDB, loadTransactions, saveTransactions, updateTransactionInDB } from '../db'
 
 export const balanceStore = atom<number>(0)
 export const transactionsHistory = atom<Array<Transaction>>([])
@@ -43,8 +43,16 @@ export const groupedTransactionsStore = computed(
   transactions => {
     console.log(transactions)
     transactions.forEach(transaction => {
-      const { transactionName, transactionSum, type, balanceAfterTransaction } =
-        transaction
+      const {
+        transactionName,
+        category,
+        transactionSum,
+        type,
+        balanceAfterTransaction,
+        sumInBalanceCurrency,
+        currency,
+        description
+      } = transaction
 
       if (transactionsMap.has(transactionName)) {
         const existing = transactionsMap.get(transactionName)!
@@ -56,6 +64,10 @@ export const groupedTransactionsStore = computed(
           date: transaction.date,
           transactionName,
           transactionSum,
+          sumInBalanceCurrency,
+          currency,
+          description,
+          category,
           type,
           balanceAfterTransaction
         })
@@ -82,8 +94,8 @@ transactionsHistory.subscribe(tr => {
   tr.forEach(t => {
     lastBalance =
       t.type === 'income'
-        ? lastBalance + t.transactionSum
-        : lastBalance - t.transactionSum
+        ? lastBalance + t.sumInBalanceCurrency
+        : lastBalance - t.sumInBalanceCurrency
   })
   if (groupedTransactionsEnabled.get()) {
     showedTransactionsHistory.set(groupedTransactionsStore.get())
@@ -98,3 +110,49 @@ groupedTransactionsEnabled.subscribe(v => {
     v ? groupedTransactionsStore.get() : transactionsHistory.get()
   )
 })
+
+export function updateTransaction(id: string, newName: string, newCategory: string) {
+  const transactions = transactionsHistory.get();
+
+  const updatedTransactions = transactions.map(transaction => {
+    if (transaction.id === id) {
+      const updatedTransaction = {
+        ...transaction,
+        transactionName: newName,
+        category: newCategory,
+      };
+
+      // Save the updated transaction to IndexedDB
+      updateTransactionInDB(updatedTransaction);
+
+      return updatedTransaction;
+    }
+
+    return transaction;
+  });
+
+  transactionsHistory.set(updatedTransactions);
+}
+
+export function updateTransactionsByName(originalName: string, newName: string, newCategory: string) {
+  const transactions = transactionsHistory.get();
+
+  const updatedTransactions = transactions.map(transaction => {
+    if (transaction.transactionName === originalName) {
+      const updatedTransaction = {
+        ...transaction,
+        transactionName: newName,
+        category: newCategory,
+      };
+
+      // Save the updated transaction to IndexedDB
+      updateTransactionInDB(updatedTransaction);
+
+      return updatedTransaction;
+    }
+
+    return transaction;
+  });
+
+  transactionsHistory.set(updatedTransactions);
+}
