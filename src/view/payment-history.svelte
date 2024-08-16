@@ -3,10 +3,11 @@
     balanceStore,
     transactionsHistory,
     sortedTransactionsHistory,
-    updateTransactionsByName
-  } from '../core/transactions/history-store';
+    updateTransactionsByName,
+    clearAllData
+  } from '@/core/transactions/history-store';
 
-  import type { Transaction } from '../core/transactions/models/transaction'
+  import type { Transaction } from '@/core/transactions/models/transaction'
 
   let editingTransactionId: string | number | null = null;
   let editingTransactionName: string = '';
@@ -29,6 +30,16 @@
 
   const cancelEditing = () => {
     editingTransactionId = null;
+  };
+
+  // Remove a transaction by ID
+  // const handleRemoveTransaction = async (id: string) => {
+  //   await removeTransaction(id);
+  // };
+
+  // Clear all transactions
+  const handleClearAllTransactions = () => {
+    clearAllData();
   };
 </script>
 
@@ -87,4 +98,5 @@
     </tbody>
   </table>
   <p>Overall Balance: {$balanceStore}</p>
+  <button on:click={handleClearAllTransactions}>Clear All Transactions</button>
 {/if}

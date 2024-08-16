@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { parseCSV } from './../core/file-parser'
+  import { parseCSV } from '@/core/file-parser'
 
   const csvTypes = [
     { value: 'csv1', label: 'CSV 1' },

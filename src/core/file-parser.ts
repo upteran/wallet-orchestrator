@@ -79,6 +79,7 @@ export const parseCSV2 = (data: string): void => {
   const currencyConverter = convertCurrency({ from: 'AMD', to: 'EUR' })
 
   // Initialize an array to hold the parsed result
+  // @ts-expect-error fixme
   const parsedData = []
   const lastBalance = balanceStore.get()
   const lines = rows.slice(10)
@@ -130,7 +131,8 @@ export const parseCSV2 = (data: string): void => {
       ])
     }
   })
-  console.log('parsedData', parsedData)
+
+  // console.log('parsedData', parsedData)
 
   parsedDataStore.set(parsedData)
 }

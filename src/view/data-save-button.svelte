@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { saveHistory } from '../core/transactions/history-store'
+  import { saveHistory } from '@/core/transactions/history-store'
 
   function saveData() {
     saveHistory()

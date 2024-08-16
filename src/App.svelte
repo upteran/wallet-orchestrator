@@ -4,6 +4,7 @@
   import TransactionsHistory from './view/payment-history.svelte'
   import Checkbox from './view/checkbox.svelte'
   import DataSaveButton from './view/data-save-button.svelte'
+  import AddManualTransaction from './view/add-manual-transaction.svelte'
 
   import {
     groupedTransactionsEnabled,
@@ -20,4 +21,5 @@
   />
   <TransactionsHistory />
   <DataSaveButton />
+  <AddManualTransaction />
 </main>

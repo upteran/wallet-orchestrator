@@ -1,10 +1,22 @@
 import { atom, computed, onMount, task } from 'nanostores'
 import type { Transaction } from './models/transaction'
-import { initDB, loadTransactions, saveTransactions, updateTransactionInDB } from '../db'
+import {
+  initDB,
+  loadTransactions,
+  saveTransactions,
+  updateTransactionInDB,
+  clearTransactions
+} from '@/core/db'
 
 export const balanceStore = atom<number>(0)
 export const transactionsHistory = atom<Array<Transaction>>([])
 export const groupedTransactionsEnabled = atom<boolean>(false)
+
+function resetStore() {
+  balanceStore.set(0)
+  transactionsHistory.set([])
+  groupedTransactionsEnabled.set(false)
+}
 
 onMount(transactionsHistory, () => {
   console.log('Mounted')
@@ -155,4 +167,11 @@ export function updateTransactionsByName(originalName: string, newName: string, 
   });
 
   transactionsHistory.set(updatedTransactions);
+}
+
+export const clearAllData = () => {
+  task(async () => {
+    await clearTransactions()
+    resetStore()
+  })
 }
