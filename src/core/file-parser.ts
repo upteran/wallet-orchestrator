@@ -61,7 +61,6 @@ export const parseCSV1 = (data: string): void => {
           currency: 'EUR',
           description: 'descr',
           type,
-          balanceAfterTransaction: +balance.toFixed(2)
         }
       ])
 
@@ -81,7 +80,6 @@ export const parseCSV2 = (data: string): void => {
   // Initialize an array to hold the parsed result
   // @ts-expect-error fixme
   const parsedData = []
-  const lastBalance = balanceStore.get()
   const lines = rows.slice(10)
   // Loop through each line and split it into fields
   lines.forEach(line => {
@@ -110,7 +108,6 @@ export const parseCSV2 = (data: string): void => {
       const csvSum = income || outcome;
       const sum = currencyConverter(csvSum)
       const type = outcome ? 'outcome' : 'income'
-      const balance = type === 'income' ? lastBalance + sum : lastBalance - sum
 
       // todo: update to class or function that creat object of transaction
       // todo: save to store only after all will be parsed to optimize it
@@ -125,8 +122,7 @@ export const parseCSV2 = (data: string): void => {
           description,
           currency,
           category: '',
-          type: income ? 'income' : 'outcome',
-          balanceAfterTransaction: +balance.toFixed(2)
+          type,
         }
       ])
     }

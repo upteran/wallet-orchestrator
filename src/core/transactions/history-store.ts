@@ -60,7 +60,6 @@ export const groupedTransactionsStore = computed(
         category,
         transactionSum,
         type,
-        balanceAfterTransaction,
         sumInBalanceCurrency,
         currency,
         description
@@ -69,7 +68,6 @@ export const groupedTransactionsStore = computed(
       if (transactionsMap.has(transactionName)) {
         const existing = transactionsMap.get(transactionName)!
         existing.transactionSum += transactionSum
-        existing.balanceAfterTransaction = balanceAfterTransaction // Update balance after the last grouped transaction
       } else {
         transactionsMap.set(transactionName, {
           id: transactionName,
@@ -80,8 +78,7 @@ export const groupedTransactionsStore = computed(
           currency,
           description,
           category,
-          type,
-          balanceAfterTransaction
+          type
         })
       }
     })

@@ -56,7 +56,6 @@
       <th>Currency</th>
       <th>Description</th>
       <th>Category</th>
-      <th>Balance After Transaction</th>
       <th>Actions</th>
     </tr>
     </thead>
@@ -84,7 +83,6 @@
             {transaction.category}
           {/if}
         </td>
-        <td>{transaction.balanceAfterTransaction}</td>
         <td>
           {#if editingTransactionId === transaction.id}
             <button on:click={saveChanges}>Save</button>

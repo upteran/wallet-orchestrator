@@ -13,13 +13,15 @@
 </script>
 
 <main>
-  <MethodSelect />
-  <FileReader />
-  <Checkbox
-    clickHandler={toggleGroupedTransactions}
-    toggler={$groupedTransactionsEnabled}
-  />
-  <TransactionsHistory />
-  <DataSaveButton />
-  <AddManualTransaction />
+  <div class="container-fluid">
+    <MethodSelect />
+    <FileReader />
+    <Checkbox
+      clickHandler={toggleGroupedTransactions}
+      toggler={$groupedTransactionsEnabled}
+    />
+    <TransactionsHistory />
+    <DataSaveButton />
+    <AddManualTransaction />
+  </div>
 </main>

@@ -8,5 +8,4 @@ export interface Transaction {
   category: string
   currency: string
   type: 'income' | 'outcome'
-  balanceAfterTransaction: number
 }
