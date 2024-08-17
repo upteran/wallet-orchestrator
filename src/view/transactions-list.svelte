@@ -1,6 +1,6 @@
 <script lang="ts">
   import {
-    sortedTransactionsHistory,
+    transactionsHistory,
     clearAllData
   } from '@/core/transactions/history-store'
   import TransactionsTable from './transactions-table.svelte'
@@ -11,7 +11,7 @@
 </script>
 
 <div class="transaction-table-outer">
-  <TransactionsTable transactions={sortedTransactionsHistory} />
+  <TransactionsTable transactions={transactionsHistory} />
   <button on:click={handleClearAllTransactions}>Clear All Transactions</button>
 </div>
 

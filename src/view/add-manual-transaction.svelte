@@ -70,7 +70,7 @@
     </select>
   </div>
   <div>
-    <label for="transactionCategory">transactionCategory:</label>
+    <label for="transactionCategory">Category:</label>
     <select id="transactionCategory" required bind:value={transactionCategory}>
       {#each categories as category}
         <option value={category}>{category}</option>

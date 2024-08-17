@@ -1,28 +1,54 @@
+<script lang="ts">
+  import { type Route, router } from '@core/router'
+  import { openPage } from '@nanostores/router'
+
+  let onMethodTypeBtnClick = (type: Route) => () => {
+    openPage(router, type)
+  }
+</script>
+
 <main>
+  <div class="method-select-outer">
     <article>
-        <button class="button">add payment history file</button>
-        <button class="button">add payment sum</button>
+      <div class="method-select-inner">
+        <button class="button" on:click={onMethodTypeBtnClick('loadHistory')}
+          >add payment history file</button
+        >
+        <button class="button" on:click={onMethodTypeBtnClick('transactionForm')}
+          >add payment sum</button
+        >
+        <button
+          class="button"
+          on:click={onMethodTypeBtnClick('transactionsHistory')}
+          >all transactions</button
+        >
+      </div>
     </article>
+  </div>
 </main>
+
 <style module>
-  /*.add-method-card {*/
-  /*  border: 1px solid;*/
-  /*  border-radius: var(--card-border-radius);*/
-  /*  padding: 2em;*/
-  /*  background: var(--card-bg);*/
-  /*  display: flex;*/
-  /*  flex-direction: column;*/
-  /*  align-content: center;*/
-  /*  justify-content: center;*/
-  /*}*/
+  .method-select-outer {
+    max-width: 500px;
+    height: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .method-select-inner {
+    height: 600px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-  /*.button {*/
-  /*  max-width: 220px;*/
-  /*  min-width: 200px;*/
-  /*  margin: 0 auto;*/
-  /*}*/
-  /*.button:first-child {*/
-  /*  margin-bottom: .2em;*/
-  /*}*/
+  .button {
+    text-transform: uppercase;
+    margin-bottom: 0.4em;
+  }
+
+  .button:last-child {
+    margin-bottom: 0;
+  }
 </style>
-
