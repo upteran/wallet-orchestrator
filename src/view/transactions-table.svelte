@@ -1,13 +1,13 @@
 <script lang="ts">
-  import {
-    balanceStore,
-    sortedTransactionsHistory,
-    updateTransactionsByName
-  } from '@/core/transactions/history-store'
   import type { Transaction } from '@/core/transactions/models/transaction'
   import type { ReadableAtom } from 'nanostores'
 
-  export let transactions: ReadableAtom<Transaction[]> = []
+  export let transactions: ReadableAtom<Transaction[]>
+  export let updateTransactionsByName: (
+    originalName: string,
+    newName: string,
+    newCategory: string
+  ) => void
 
   let editingTransactionId: string | number | null = null
   let editingTransactionName: string = ''
@@ -37,7 +37,7 @@
   }
 </script>
 
-{#if $sortedTransactionsHistory.length > 0}
+{#if $transactions.length > 0}
   <table class="transaction-table">
     <thead>
       <tr>
@@ -54,7 +54,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each $sortedTransactionsHistory as transaction}
+      {#each $transactions as transaction}
         <tr>
           <td>{transaction.id}</td>
           <td>{transaction.date}</td>
@@ -89,6 +89,5 @@
       {/each}
     </tbody>
   </table>
-  <p>Overall Balance: {$balanceStore}</p>
   <!--  <button on:click={handleClearAllTransactions}>Clear All Transactions</button>-->
 {/if}

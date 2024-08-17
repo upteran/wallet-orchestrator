@@ -1,5 +1,5 @@
 import { atom } from 'nanostores'
-import { transactionsHistory, balanceStore } from './transactions/history-store'
+import { loadedByFileTransactions, balance } from './transactions/store'
 import { convertCurrency } from './currency'
 
 export const parsedDataStore = atom<Array<Record<string, unknown>>>([])
@@ -24,11 +24,11 @@ export const parseCSV1 = (data: string): void => {
 
   const rows = data.split('\n').map(row => row.split(','))
 
-  const transactions = rows.slice(4) // Skip the first 3 rows
-  let lastBalance = balanceStore.get()
+  const transactionsRow = rows.slice(4) // Skip the first 3 rows
+  let lastBalance = balance.get()
 
-  transactions.forEach(transaction => {
-    const [date, name, ...extra] = transaction
+  transactionsRow.forEach(t => {
+    const [date, name, ...extra] = t
 
     if (extra.length >= 6) {
       const id = extra[0]
@@ -49,8 +49,8 @@ export const parseCSV1 = (data: string): void => {
 
       // todo: update to class or function that creat object of transaction
       // todo: save to store only after all will be parsed to optimize it
-      transactionsHistory.set([
-        ...transactionsHistory.get(),
+      loadedByFileTransactions.set([
+        ...loadedByFileTransactions.get(),
         {
           id,
           date: date,
@@ -111,8 +111,8 @@ export const parseCSV2 = (data: string): void => {
 
       // todo: update to class or function that creat object of transaction
       // todo: save to store only after all will be parsed to optimize it
-      transactionsHistory.set([
-        ...transactionsHistory.get(),
+      loadedByFileTransactions.set([
+        ...loadedByFileTransactions.get(),
         {
           id: number,
           date: date,

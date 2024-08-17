@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { transactionsHistory } from '@/core/transactions/history-store'
+  import { transactions } from '@/core/transactions/store'
   import { TRANSACTIONS_CATEGORY } from '@/core/transactions/category'
 
   let transactionName = ''
@@ -17,6 +17,7 @@
       return
     }
 
+    // todo: create function in store file
     const newTransaction = {
       id: Date.now().toString(),
       transactionName,
@@ -31,7 +32,7 @@
     }
 
     // Update commonTransactionsStore
-    transactionsHistory.set([...transactionsHistory.get(), newTransaction])
+    transactions.set([...transactions.get(), newTransaction])
 
     // Add transaction to IndexedDB
     // addTransactionToDB(newTransaction);

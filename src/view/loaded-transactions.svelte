@@ -6,7 +6,7 @@
   import {
     groupedTransactionsEnabled,
     toggleGroupedTransactions
-  } from '@core/transactions/history-store'
+  } from '@/core/transactions/store'
 </script>
 
 <main>
