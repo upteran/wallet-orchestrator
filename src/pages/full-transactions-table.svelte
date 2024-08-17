@@ -2,21 +2,28 @@
   import {
     sortedFullList,
     clearAllData,
-    updateFullTransactionsByName, balance
-  } from '@/core/transactions/store'
-  import TransactionsTable from './transactions-table.svelte'
+    groupedFullList,
+    groupedTransactionsEnabled,
+    updateFullTransactionsByName,
+    balanceByFullHistory
+  } from '@core/transactions/store'
+  import TransactionsTable from '@view/transactions-table.svelte'
   // Clear all transactions
   const handleClearAllTransactions = () => {
     clearAllData()
   }
+
+  const transactions = groupedTransactionsEnabled
+    ? groupedFullList
+    : sortedFullList
 </script>
 
 <div class="transaction-table-outer">
   <TransactionsTable
-    transactions={sortedFullList}
+    transactions={transactions}
     updateTransactionsByName={updateFullTransactionsByName}
   />
-  <p>Overall Balance: {$balance}</p>
+  <p>Overall Balance: {$balanceByFullHistory}</p>
   <button on:click={handleClearAllTransactions}>Clear All Transactions</button>
 </div>
 

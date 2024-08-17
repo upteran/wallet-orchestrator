@@ -1,5 +1,5 @@
 import { atom } from 'nanostores'
-import { loadedByFileTransactions, balance } from './transactions/store'
+import { loadedByFileTransactions } from './transactions/store'
 import { convertCurrency } from './currency'
 
 export const parsedDataStore = atom<Array<Record<string, unknown>>>([])
@@ -25,7 +25,6 @@ export const parseCSV1 = (data: string): void => {
   const rows = data.split('\n').map(row => row.split(','))
 
   const transactionsRow = rows.slice(4) // Skip the first 3 rows
-  let lastBalance = balance.get()
 
   transactionsRow.forEach(t => {
     const [date, name, ...extra] = t
@@ -34,15 +33,13 @@ export const parseCSV1 = (data: string): void => {
       const id = extra[0]
       const sum = parseFloat(extra[2])
       const type = extra[3] === 'Дт' ? 'outcome' : 'income'
-      const balance = type === 'income' ? lastBalance + sum : lastBalance - sum
 
       parsedData.push({
         id,
         date,
         name,
         sum,
-        type,
-        balance
+        type
       })
 
       // console.log('parsedData', parsedData)
@@ -60,15 +57,13 @@ export const parseCSV1 = (data: string): void => {
           category: '',
           currency: 'EUR',
           description: 'descr',
-          type,
+          type
         }
       ])
-
-      lastBalance = +balance.toFixed(2) // Update the balance after each transaction
     }
   })
 
-  parsedDataStore.set(parsedData)
+  // parsedDataStore.set(parsedData)
 }
 
 export const parseCSV2 = (data: string): void => {
@@ -103,9 +98,17 @@ export const parseCSV2 = (data: string): void => {
       const description = fields[8]
 
       // Add the parsed data to the array
-      parsedData.push({ number, date, currency, income, outcome, name, description })
+      parsedData.push({
+        number,
+        date,
+        currency,
+        income,
+        outcome,
+        name,
+        description
+      })
 
-      const csvSum = income || outcome;
+      const csvSum = income || outcome
       const sum = currencyConverter(csvSum)
       const type = outcome ? 'outcome' : 'income'
 
@@ -122,7 +125,7 @@ export const parseCSV2 = (data: string): void => {
           description,
           currency,
           category: '',
-          type,
+          type
         }
       ])
     }
@@ -130,5 +133,5 @@ export const parseCSV2 = (data: string): void => {
 
   // console.log('parsedData', parsedData)
 
-  parsedDataStore.set(parsedData)
+  // parsedDataStore.set(parsedData)
 }

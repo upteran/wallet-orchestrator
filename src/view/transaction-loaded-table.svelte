@@ -1,24 +1,32 @@
 <script lang="ts">
   import {
-    balance,
-    clearAllData,
+    balanceByLoadedData,
+    resetStore,
     sortedLoadedList,
-    updateLoadedTransactionsByName
+    updateLoadedTransactionsByName,
+    groupedTransactionsEnabled,
+    groupedLoadedList
   } from '@/core/transactions/store'
   import TransactionsTable from './transactions-table.svelte'
   // Clear all transactions
   const handleClearAllTransactions = () => {
-    clearAllData()
+    resetStore()
   }
+
+  const transactions = groupedTransactionsEnabled
+    ? groupedLoadedList
+    : sortedLoadedList
 </script>
 
 <div class="transaction-table-outer">
   <TransactionsTable
-    transactions={sortedLoadedList}
+    transactions={transactions}
     updateTransactionsByName={updateLoadedTransactionsByName}
   />
-  <p>Overall Balance: {$balance}</p>
-  <button on:click={handleClearAllTransactions}>Clear All Transactions</button>
+  <p>Overall Balance: {$balanceByLoadedData}</p>
+  <button disabled={!sortedLoadedList} on:click={handleClearAllTransactions}
+    >Clear All Transactions</button
+  >
 </div>
 
 <style modul>

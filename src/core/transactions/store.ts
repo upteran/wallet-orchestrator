@@ -1,10 +1,4 @@
-import {
-  atom,
-  computed,
-  onMount,
-  task,
-  type Atom,
-} from 'nanostores'
+import { atom, computed, onMount, task, type Atom } from 'nanostores'
 import type { Transaction } from './models/transaction'
 import {
   initDB,
@@ -14,13 +8,12 @@ import {
   clearTransactions
 } from '@/core/db'
 
-export const balance = atom<number>(0)
+// export const balance = atom<number>(0)
 export const transactions = atom<Array<Transaction>>([])
 export const loadedByFileTransactions = atom<Array<Transaction>>([])
 export const groupedTransactionsEnabled = atom<boolean>(false)
 
-function resetStore() {
-  balance.set(0)
+export function resetStore() {
   transactions.set([])
   loadedByFileTransactions.set([])
   groupedTransactionsEnabled.set(false)
@@ -155,21 +148,20 @@ function updateTransactionsByName(
       return transaction
     })
 
-    transactions.set(updatedTransactions)
+    list.set(updatedTransactions)
   }
 }
 
-const updateBalance = (
-  t: readonly Transaction[]
-) => {
-  let lastBalance = balance.get()
+const updateBalance = (t: readonly Transaction[]) => {
+  let lastBalance = 0
   t.forEach(t => {
     lastBalance =
       t.type === 'income'
         ? lastBalance + t.sumInBalanceCurrency
         : lastBalance - t.sumInBalanceCurrency
   })
-  balance.set(+lastBalance.toFixed(2))
+  console.log(lastBalance)
+  return +lastBalance.toFixed(2)
 }
 
 export const toggleGroupedTransactions = () =>
@@ -179,7 +171,6 @@ export const toggleGroupedTransactions = () =>
 export const saveHistory = () =>
   task(async () => {
     const t = loadedByFileTransactions.get()
-    console.log('transactions', t)
     await saveTransactions(t)
   })
 
@@ -218,4 +209,12 @@ export const updateFullTransactionsByName = updateTransactionsByName(
   transactions
 )
 
-transactions.subscribe(updateBalance)
+export const balanceByLoadedData = computed(
+  [loadedByFileTransactions],
+  updateBalance
+)
+
+export const balanceByFullHistory = computed(
+  [transactions],
+  updateBalance
+)

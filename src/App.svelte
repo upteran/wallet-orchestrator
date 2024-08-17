@@ -1,8 +1,8 @@
 <script lang="ts">
-  import MethodSelect from '@/view/method-select.svelte'
-  import AddManualTransaction from '@/view/add-manual-transaction.svelte'
-  import LoadedTransactions from '@/view/loaded-transactions.svelte'
-  import TransactionList from '@/view/transactions-list.svelte'
+  import MethodSelect from '@/pages/method-select.svelte'
+  import AddManualTransaction from '@/pages/add-manual-transaction.svelte'
+  import TransactionLoader from '@/pages/transaction-loader.svelte'
+  import FullTransactionList from '@/pages/full-transactions-table.svelte'
   import { router } from '@/core/router'
 </script>
 
@@ -11,11 +11,11 @@
     {#if $router.route === 'home'}
       <MethodSelect />
     {:else if $router.route === 'loadHistory'}
-      <LoadedTransactions />
+      <TransactionLoader />
     {:else if $router.route === 'transactionForm'}
       <AddManualTransaction />
     {:else}
-      <TransactionList />
+      <FullTransactionList />
     {/if}
   </div>
 </main>

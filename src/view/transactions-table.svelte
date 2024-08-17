@@ -41,11 +41,11 @@
   <table class="transaction-table">
     <thead>
       <tr>
-        <th>Transaction id</th>
-        <th>Transaction date</th>
-        <th>Transaction Name</th>
-        <th>Transaction Sum</th>
-        <th>Transaction sumInBalanceCurrency</th>
+        <th>id</th>
+        <th>date</th>
+        <th>Name</th>
+        <th>Sum</th>
+        <th>sumInBalanceCurrency</th>
         <th>Type</th>
         <th>Currency</th>
         <th>Description</th>
@@ -89,5 +89,4 @@
       {/each}
     </tbody>
   </table>
-  <!--  <button on:click={handleClearAllTransactions}>Clear All Transactions</button>-->
 {/if}

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type Route, router } from '@/core/router'
+  import { type Route, router } from '@core/router'
   import { openPage } from '@nanostores/router'
 
   let onMethodTypeBtnClick = (type: Route) => () => {
@@ -14,11 +14,11 @@
         <button class="button" on:click={onMethodTypeBtnClick('loadHistory')}
           >add payment history file</button
         >
-        <button class="button" on:click={onMethodTypeBtnClick('transactionForm')}
+        <button class="button secondary" on:click={onMethodTypeBtnClick('transactionForm')}
           >add payment sum</button
         >
         <button
-          class="button"
+          class="button contrast"
           on:click={onMethodTypeBtnClick('transactionsHistory')}
           >all transactions</button
         >
@@ -30,10 +30,7 @@
 <style module>
   .method-select-outer {
     max-width: 500px;
-    height: 600px;
     margin: 0 auto;
-    display: flex;
-    flex-direction: column;
   }
   .method-select-inner {
     height: 600px;

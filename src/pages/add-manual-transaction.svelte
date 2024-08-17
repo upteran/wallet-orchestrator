@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { transactions } from '@/core/transactions/store'
-  import { TRANSACTIONS_CATEGORY } from '@/core/transactions/category'
+  import { transactions } from '@core/transactions/store'
+  import { TRANSACTIONS_CATEGORY } from '@core/transactions/category'
 
   let transactionName = ''
   let transactionSum: number | null = null
