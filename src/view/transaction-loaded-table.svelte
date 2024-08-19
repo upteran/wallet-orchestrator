@@ -12,22 +12,13 @@
   }
 </script>
 
-<div class="transaction-table-outer">
-  <TransactionsTable
-    transactions={$loadedList}
-    updateTransactionsByName={updateLoadedTransactionsByName}
-  />
-  <p>Overall Balance: {$balanceByLoadedData.balance}</p>
-  <p>Overall Incomes: {$balanceByLoadedData.totalIncomes}</p>
-  <p>Overall Outcomes: {$balanceByLoadedData.totalOutcomes}</p>
-  <button disabled={!$loadedList.length} on:click={handleClearAllTransactions}
-    >Clear All Transactions</button
-  >
-</div>
-
-<style modul>
-  .transaction-table-outer {
-    max-width: 100%;
-    overflow-y: auto;
-  }
-</style>
+<TransactionsTable
+  transactions={$loadedList}
+  updateTransactionsByName={updateLoadedTransactionsByName}
+/>
+<p>Overall Balance: {$balanceByLoadedData.balance}</p>
+<p>Overall Incomes: {$balanceByLoadedData.totalIncomes}</p>
+<p>Overall Outcomes: {$balanceByLoadedData.totalOutcomes}</p>
+<button disabled={!$loadedList.length} on:click={handleClearAllTransactions}
+  >Clear All Transactions</button
+>

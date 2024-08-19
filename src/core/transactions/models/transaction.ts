@@ -1,3 +1,5 @@
+import { nanoid } from 'nanoid'
+
 export interface Transaction {
   id: string | number
   date: string
@@ -11,8 +13,8 @@ export interface Transaction {
 }
 
 export function createTransaction({
-  id,
-  date,
+  id = nanoid(),
+  date = new Date().toISOString(),
   transactionName,
   transactionSum,
   sumInBalanceCurrency,
@@ -20,7 +22,17 @@ export function createTransaction({
   currency,
   description,
   type
-}: Transaction) {
+}: Transaction | {
+  id?: Transaction['id']
+  date?: Transaction['date']
+  transactionName: Transaction['transactionName']
+  transactionSum: Transaction['transactionSum']
+  sumInBalanceCurrency: Transaction['sumInBalanceCurrency']
+  description: Transaction['description']
+  category: Transaction['category']
+  currency: Transaction['currency']
+  type: Transaction['type']
+}) {
   return {
     id,
     date: date,

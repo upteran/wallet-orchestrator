@@ -1,5 +1,5 @@
 import { atom, computed, onMount, task, type Atom } from 'nanostores'
-import type { Transaction } from './models/transaction'
+import { type Transaction, createTransaction } from './models/transaction'
 import {
   initDB,
   loadTransactions,
@@ -231,7 +231,7 @@ export const groupedFullList = computed(transactions, groupTransactions)
 export const sortedFullList = computed(transactions, sortTransactions)
 
 export const loadedFullList = computed(
-  [groupedTransactionsEnabled, groupedLoadedList, sortedLoadedList],
+  [groupedTransactionsEnabled, groupedFullList, sortedFullList],
   isEnable => {
     return isEnable ? groupedFullList.get() : sortedFullList.get()
   }
@@ -250,3 +250,35 @@ export const balanceByLoadedData = computed(
 )
 
 export const balanceByFullHistory = computed([transactions], updateBalance)
+
+// manual transactions
+
+export function saveManualTransaction({
+  transactionName,
+  transactionSum,
+  type,
+  category
+}: {
+  transactionName: Transaction['transactionName'],
+  transactionSum: Transaction['transactionSum'],
+  type: Transaction['type'],
+  category: Transaction['category']
+}) {
+  const newTransaction = createTransaction({
+    transactionName,
+    transactionSum,
+    type,
+    sumInBalanceCurrency: transactionSum,
+    description: 'string',
+    category,
+    currency: 'EUR'
+  })
+
+  // Update commonTransactionsStore
+  transactions.set([...transactions.get(), newTransaction])
+
+  task(async () => {
+    // Add transaction to IndexedDB
+    await saveTransactions([newTransaction])
+  })
+}

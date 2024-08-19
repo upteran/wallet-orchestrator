@@ -1,11 +1,15 @@
 <script lang="ts">
-  import { transactions } from '@core/transactions/store'
+  import {
+    transactions,
+    saveManualTransaction,
+    updateFullTransactionsByName
+  } from '@core/transactions/store'
   import { TRANSACTIONS_CATEGORY } from '@core/transactions/category'
+  import TransactionsTable from '@/view/transactions-table.svelte'
 
   let transactionName = ''
   let transactionSum: number | null = null
   let transactionType: 'income' | 'outcome' = 'income'
-  let balanceAfterTransaction: number | null = null
   let transactionCategory: string
   const categories = Object.values(TRANSACTIONS_CATEGORY)
 
@@ -17,33 +21,25 @@
       return
     }
 
-    // todo: create function in store file
-    const newTransaction = {
-      id: Date.now().toString(),
+    saveManualTransaction({
       transactionName,
       transactionSum,
       type: transactionType,
-      balanceAfterTransaction,
-      date: new Date().toISOString(),
-      sumInBalanceCurrency: transactionSum,
-      description: 'string',
       category: transactionCategory,
-      currency: 'EUR'
-    }
-
-    // Update commonTransactionsStore
-    transactions.set([...transactions.get(), newTransaction])
-
-    // Add transaction to IndexedDB
-    // addTransactionToDB(newTransaction);
+    })
 
     // Reset form fields
     transactionName = ''
     transactionSum = null
-    balanceAfterTransaction = null
   }
 </script>
 
+<main>
+  <TransactionsTable
+    transactions={$transactions}
+    updateTransactionsByName={updateFullTransactionsByName}
+  />
+</main>
 <form on:submit={handleSubmit}>
   <div>
     <label for="transactionName">Transaction Name:</label>
