@@ -1,8 +1,7 @@
 <script lang="ts">
   import type { Transaction } from '@/core/transactions/models/transaction'
-  import type { ReadableAtom } from 'nanostores'
 
-  export let transactions: ReadableAtom<Transaction[]>
+  export let transactions: readonly Transaction[]
   export let updateTransactionsByName: (
     originalName: string,
     newName: string,
@@ -37,7 +36,7 @@
   }
 </script>
 
-{#if $transactions.length > 0}
+{#if transactions.length > 0}
   <table class="transaction-table">
     <thead>
       <tr>
@@ -54,7 +53,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each $transactions as transaction}
+      {#each transactions as transaction}
         <tr>
           <td>{transaction.id}</td>
           <td>{transaction.date}</td>

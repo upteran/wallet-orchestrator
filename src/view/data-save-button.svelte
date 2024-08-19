@@ -1,13 +1,15 @@
 <script lang="ts">
   import { saveHistory } from '@/core/transactions/store'
-
+  import { loadedList } from '@/core/transactions/store'
   function saveData() {
     saveHistory()
   }
 </script>
 
 <div class="save-btn-outer">
-  <button class="outline" on:click={saveData}>Add to Previous Data</button>
+  <button class="outline" disabled={!$loadedList.length} on:click={saveData}
+    >Add to Previous Data</button
+  >
 </div>
 
 <style module>

@@ -1,6 +1,10 @@
 import { atom } from 'nanostores'
 import { loadedByFileTransactions } from './transactions/store'
 import { convertCurrency } from './currency'
+import {
+  createTransaction,
+  type Transaction
+} from '@core/transactions/models/transaction'
 
 export const parsedDataStore = atom<Array<Record<string, unknown>>>([])
 
@@ -20,7 +24,7 @@ export const parseCSV = (data: string, csvType: string): void => {
 }
 
 export const parseCSV1 = (data: string): void => {
-  const parsedData: Array<Record<string, unknown>> = []
+  const parsedData: Transaction[] = []
 
   const rows = data.split('\n').map(row => row.split(','))
 
@@ -30,51 +34,36 @@ export const parseCSV1 = (data: string): void => {
     const [date, name, ...extra] = t
 
     if (extra.length >= 6) {
+      console.log('extra', extra)
       const id = extra[0]
       const sum = parseFloat(extra[2])
       const type = extra[3] === 'Дт' ? 'outcome' : 'income'
 
-      parsedData.push({
-        id,
-        date,
-        name,
-        sum,
-        type
-      })
-
-      // console.log('parsedData', parsedData)
-
-      // todo: update to class or function that creat object of transaction
-      // todo: save to store only after all will be parsed to optimize it
-      loadedByFileTransactions.set([
-        ...loadedByFileTransactions.get(),
-        {
+      parsedData.push(
+        createTransaction({
           id,
-          date: date,
-          transactionName: name,
+          category: 'none',
+          type,
           transactionSum: sum,
           sumInBalanceCurrency: sum,
-          category: '',
-          currency: 'EUR',
           description: 'descr',
-          type
-        }
-      ])
+          transactionName: name,
+          date,
+          currency: 'EUR'
+        })
+      )
     }
   })
-
-  // parsedDataStore.set(parsedData)
+  loadedByFileTransactions.set([...loadedByFileTransactions.get(), ...parsedData])
 }
 
 export const parseCSV2 = (data: string): void => {
+  const parsedData: Transaction[] = []
   // Split the CSV string into lines
   const rows = data.split('\n')
   // todo: make convert to dynamic balance currency when it will be dynamic
   const currencyConverter = convertCurrency({ from: 'AMD', to: 'EUR' })
 
-  // Initialize an array to hold the parsed result
-  // @ts-expect-error fixme
-  const parsedData = []
   const lines = rows.slice(10)
   // Loop through each line and split it into fields
   lines.forEach(line => {
@@ -97,41 +86,25 @@ export const parseCSV2 = (data: string): void => {
       const name = fields[7]
       const description = fields[8]
 
-      // Add the parsed data to the array
-      parsedData.push({
-        number,
-        date,
-        currency,
-        income,
-        outcome,
-        name,
-        description
-      })
-
       const csvSum = income || outcome
       const sum = currencyConverter(csvSum)
       const type = outcome ? 'outcome' : 'income'
 
-      // todo: update to class or function that creat object of transaction
-      // todo: save to store only after all will be parsed to optimize it
-      loadedByFileTransactions.set([
-        ...loadedByFileTransactions.get(),
-        {
+      parsedData.push(
+        createTransaction({
           id: number,
-          date: date,
-          transactionName: name,
           transactionSum: csvSum,
           sumInBalanceCurrency: sum,
-          description,
+          date,
           currency,
-          category: '',
-          type
-        }
-      ])
+          type,
+          transactionName: name,
+          description,
+          category: ''
+        })
+      )
     }
   })
 
-  // console.log('parsedData', parsedData)
-
-  // parsedDataStore.set(parsedData)
+  loadedByFileTransactions.set([...loadedByFileTransactions.get(), ...parsedData])
 }

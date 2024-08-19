@@ -9,3 +9,27 @@ export interface Transaction {
   currency: string
   type: 'income' | 'outcome'
 }
+
+export function createTransaction({
+  id,
+  date,
+  transactionName,
+  transactionSum,
+  sumInBalanceCurrency,
+  category,
+  currency,
+  description,
+  type
+}: Transaction) {
+  return {
+    id,
+    date: date,
+    transactionName,
+    transactionSum,
+    sumInBalanceCurrency,
+    category,
+    currency,
+    description,
+    type
+  }
+}

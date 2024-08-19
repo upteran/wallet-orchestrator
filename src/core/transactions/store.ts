@@ -8,7 +8,12 @@ import {
   clearTransactions
 } from '@/core/db'
 
-// export const balance = atom<number>(0)
+// helpers
+function formatToFixedNumber(value: number) {
+  return +value.toFixed(2)
+}
+
+// main logic
 export const transactions = atom<Array<Transaction>>([])
 export const loadedByFileTransactions = atom<Array<Transaction>>([])
 export const groupedTransactionsEnabled = atom<boolean>(false)
@@ -56,6 +61,7 @@ function groupTransactions(transactions: Transaction[]) {
   console.log(transactions)
   transactions.forEach(transaction => {
     const {
+      id,
       transactionName,
       category,
       transactionSum,
@@ -67,14 +73,19 @@ function groupTransactions(transactions: Transaction[]) {
 
     if (transactionsMap.has(transactionName)) {
       const existing = transactionsMap.get(transactionName)!
-      existing.transactionSum += transactionSum
+      existing.transactionSum = formatToFixedNumber(
+        existing.transactionSum + transactionSum
+      )
+      existing.sumInBalanceCurrency = formatToFixedNumber(
+        existing.sumInBalanceCurrency + sumInBalanceCurrency
+      )
     } else {
       transactionsMap.set(transactionName, {
-        id: transactionName,
+        id,
         date: transaction.date,
         transactionName,
-        transactionSum,
-        sumInBalanceCurrency,
+        transactionSum: formatToFixedNumber(transactionSum),
+        sumInBalanceCurrency: formatToFixedNumber(sumInBalanceCurrency),
         currency,
         description,
         category,
@@ -152,16 +163,26 @@ function updateTransactionsByName(
   }
 }
 
-const updateBalance = (t: readonly Transaction[]) => {
-  let lastBalance = 0
-  t.forEach(t => {
-    lastBalance =
-      t.type === 'income'
-        ? lastBalance + t.sumInBalanceCurrency
-        : lastBalance - t.sumInBalanceCurrency
-  })
-  console.log(lastBalance)
-  return +lastBalance.toFixed(2)
+const updateBalance = (transactions: readonly Transaction[]) => {
+  const { balance, totalIncomes, totalOutcomes } = transactions.reduce(
+    (acc, t) => {
+      if (t.type === 'income') {
+        acc.balance += t.sumInBalanceCurrency
+        acc.totalIncomes += t.sumInBalanceCurrency
+      } else if (t.type === 'outcome') {
+        acc.balance -= t.sumInBalanceCurrency
+        acc.totalOutcomes += t.sumInBalanceCurrency
+      }
+      return acc
+    },
+    { balance: 0, totalIncomes: 0, totalOutcomes: 0 }
+  )
+
+  return {
+    balance: formatToFixedNumber(balance),
+    totalIncomes: formatToFixedNumber(totalIncomes),
+    totalOutcomes: formatToFixedNumber(totalOutcomes)
+  }
 }
 
 export const toggleGroupedTransactions = () =>
@@ -184,6 +205,13 @@ export const sortedLoadedList = computed(
   sortTransactions
 )
 
+export const loadedList = computed(
+  [groupedTransactionsEnabled, groupedLoadedList, sortedLoadedList],
+  isEnable => {
+    return isEnable ? groupedLoadedList.get() : sortedLoadedList.get()
+  }
+)
+
 export const updateLoadedTransaction = updateTransaction(
   false,
   loadedByFileTransactions
@@ -202,6 +230,13 @@ export const groupedFullList = computed(transactions, groupTransactions)
 
 export const sortedFullList = computed(transactions, sortTransactions)
 
+export const loadedFullList = computed(
+  [groupedTransactionsEnabled, groupedLoadedList, sortedLoadedList],
+  isEnable => {
+    return isEnable ? groupedFullList.get() : sortedFullList.get()
+  }
+)
+
 export const updateFullListTransaction = updateTransaction(true, transactions)
 
 export const updateFullTransactionsByName = updateTransactionsByName(
@@ -214,7 +249,4 @@ export const balanceByLoadedData = computed(
   updateBalance
 )
 
-export const balanceByFullHistory = computed(
-  [transactions],
-  updateBalance
-)
+export const balanceByFullHistory = computed([transactions], updateBalance)
