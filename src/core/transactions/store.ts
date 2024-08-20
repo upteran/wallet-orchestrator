@@ -1,4 +1,5 @@
 import { atom, computed, onMount, task, type Atom } from 'nanostores'
+import { type Dayjs } from 'dayjs'
 import { type Transaction, createTransaction } from './models/transaction'
 import {
   initDB,
@@ -7,6 +8,7 @@ import {
   updateTransactionInDB,
   clearTransactions
 } from '@/core/db'
+import { convertDateToCompare } from '@core/helpers/date'
 
 // helpers
 function formatToFixedNumber(value: number) {
@@ -17,6 +19,9 @@ function formatToFixedNumber(value: number) {
 export const transactions = atom<Array<Transaction>>([])
 export const loadedByFileTransactions = atom<Array<Transaction>>([])
 export const groupedTransactionsEnabled = atom<boolean>(false)
+// Filters
+export const startDateFilter = atom<Dayjs | null>(null)
+export const endDateFilter = atom<Dayjs | null>(null)
 
 export function resetStore() {
   transactions.set([])
@@ -206,9 +211,30 @@ export const sortedLoadedList = computed(
 )
 
 export const loadedList = computed(
-  [groupedTransactionsEnabled, groupedLoadedList, sortedLoadedList],
-  isEnable => {
-    return isEnable ? groupedLoadedList.get() : sortedLoadedList.get()
+  [
+    groupedTransactionsEnabled,
+    groupedLoadedList,
+    sortedLoadedList,
+    startDateFilter,
+    endDateFilter
+  ],
+  (isEnable, groupedList, sortedList, startDate, endDate) => {
+    const list = isEnable ? groupedList : sortedList
+    return list.filter(t => {
+      const transactionDate = convertDateToCompare(t.date)
+
+      const start = startDate ? startDate : null
+      const end = endDate ? endDate : null
+
+      // Apply filtering logic
+      const isAfterStart = start
+        ? transactionDate.isAfter(start) || transactionDate.isSame(start, 'day')
+        : true
+      const isBeforeEnd = end
+        ? transactionDate.isBefore(end) || transactionDate.isSame(end, 'day')
+        : true
+      return isAfterStart && isBeforeEnd
+    })
   }
 )
 
@@ -259,9 +285,9 @@ export function saveManualTransaction({
   type,
   category
 }: {
-  transactionName: Transaction['transactionName'],
-  transactionSum: Transaction['transactionSum'],
-  type: Transaction['type'],
+  transactionName: Transaction['transactionName']
+  transactionSum: Transaction['transactionSum']
+  type: Transaction['type']
   category: Transaction['category']
 }) {
   const newTransaction = createTransaction({

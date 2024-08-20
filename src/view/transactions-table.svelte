@@ -1,5 +1,7 @@
 <script lang="ts">
   import type { Transaction } from '@/core/transactions/models/transaction'
+  import { CATEGORIES_NAMES } from '@/core/transactions/category'
+  import DateFilter from '@/view/date-filter.svelte'
 
   export let transactions: readonly Transaction[]
   export let updateTransactionsByName: (
@@ -36,6 +38,7 @@
   }
 </script>
 
+<DateFilter />
 <div class="transaction-table-outer">
   {#if transactions.length > 0}
     <table class="transaction-table">
@@ -44,8 +47,8 @@
           <th>id</th>
           <th>date</th>
           <th>Name</th>
-          <th>Sum</th>
-          <th>sumInBalanceCurrency</th>
+          <th>Sum (CUR)</th>
+          <th>sum (EUR)</th>
           <th>Type</th>
           <th>Currency</th>
           <th>Description</th>
@@ -72,9 +75,19 @@
             <td>{transaction.description}</td>
             <td>
               {#if editingTransactionId === transaction.id}
-                <input type="text" bind:value={editingCategory} />
+                <select bind:value={editingCategory}>
+                  {#each CATEGORIES_NAMES as category}
+                    <option
+                      value={category}
+                      on:change={value => (editingCategory = value.target)}
+                      >{category}</option
+                    >
+                  {/each}
+                </select>
               {:else}
-                {transaction.category}
+                <span on:click={() => startEditing(transaction)}
+                  >{transaction.category}</span
+                >
               {/if}
             </td>
             <td>
@@ -91,6 +104,7 @@
     </table>
   {/if}
 </div>
+
 <style modul>
   .transaction-table-outer {
     max-width: 100%;

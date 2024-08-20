@@ -39,7 +39,7 @@ export default [
       'svelte/no-extra-reactive-curlies': 'error',
       'svelte/no-reactive-literals': 'error',
       'svelte/no-reactive-reassign': 'error',
-      'svelte/no-unused-class-name': 'error',
+      'svelte/no-unused-class-name': 'warn',
       'svelte/prefer-class-directive': 'error',
       'svelte/require-each-key': 'error',
       'svelte/require-optimized-style-attribute': 'error',

@@ -17,9 +17,18 @@ dependencies:
   '@tsconfig/svelte':
     specifier: 5.0.4
     version: 5.0.4
+  dayjs:
+    specifier: ^1.11.12
+    version: 1.11.12
+  flatpickr:
+    specifier: ^4.6.13
+    version: 4.6.13
   idb:
     specifier: 8.0.0
     version: 8.0.0
+  nanoid:
+    specifier: ^5.0.7
+    version: 5.0.7
   nanostores:
     specifier: 0.11.2
     version: 0.11.2
@@ -29,6 +38,9 @@ dependencies:
   svelte:
     specifier: 4.2.18
     version: 4.2.18
+  svelte-flatpickr:
+    specifier: ^3.3.4
+    version: 3.3.4(svelte@4.2.18)
   svelte-preprocess-cssmodules:
     specifier: 2.2.4
     version: 2.2.4(svelte@4.2.18)(typescript@5.5.3)
@@ -940,6 +952,10 @@ packages:
     resolution: {integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==}
     dev: false
 
+  /dayjs@1.11.12:
+    resolution: {integrity: sha512-Rt2g+nTbLlDWZTwwrIXjy9MeiZmSDI375FvZs72ngxx8PDC6YXOeR3q5LAuPzjZQxhiWdRKac7RKV+YyQYfYIg==}
+    dev: false
+
   /debug@4.3.6:
     resolution: {integrity: sha512-O/09Bd4Z1fBrU4VzkhFqVgpPzaGbw6Sm9FEkBT1A/YBXQFGuuSxa1dN2nxgxS34JmKXqYx8CZAwEVoJFImUXIg==}
     engines: {node: '>=6.0'}
@@ -1241,6 +1257,10 @@ packages:
     dependencies:
       flatted: 3.3.1
       keyv: 4.5.4
+
+  /flatpickr@4.6.13:
+    resolution: {integrity: sha512-97PMG/aywoYpB4IvbvUJi0RQi8vearvU0oov1WW3k0WZPBMrTQVqekSX5CjSG/M4Q3i6A/0FKXC7RyAoAUUSPw==}
+    dev: false
 
   /flatted@3.3.1:
     resolution: {integrity: sha512-X8cqMLLie7KsNUDSdzeN8FYK9rEt4Dt67OsG/DNGnYTSDBG4uFAJFBnUeiV+zCVAvwFy56IjM9sH51jVaEhNxw==}
@@ -1594,6 +1614,12 @@ packages:
     resolution: {integrity: sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
+
+  /nanoid@5.0.7:
+    resolution: {integrity: sha512-oLxFY2gd2IqnjcYyOXD8XGCftpGtZP2AbHbOkthDkvRywH5ayNtPVy9YlOPcHckXzbLTCHpkb7FB+yuxKV13pQ==}
+    engines: {node: ^18 || >=20}
+    hasBin: true
+    dev: false
 
   /nanostores@0.11.2:
     resolution: {integrity: sha512-6bucNxMJA5rNV554WQl+MWGng0QVMzlRgpKTHHfIbVLrhQ+yRXBychV9ECGVuuUfCMQPjfIG9bj8oJFZ9hYP/Q==}
@@ -2043,6 +2069,15 @@ packages:
       postcss-scss: 4.0.9(postcss@8.4.41)
       svelte: 4.2.18
     dev: true
+
+  /svelte-flatpickr@3.3.4(svelte@4.2.18):
+    resolution: {integrity: sha512-i+QqJRs8zPRKsxv8r2GIk1fsb8cI3ozn3/aHXtViAoNKLy0j4PV7OSWavgEZC1wlAa34qi2hMkUh+vg6qt2DRA==}
+    peerDependencies:
+      svelte: '>= 3.31.0 < 5.0'
+    dependencies:
+      flatpickr: 4.6.13
+      svelte: 4.2.18
+    dev: false
 
   /svelte-hmr@0.16.0(svelte@4.2.18):
     resolution: {integrity: sha512-Gyc7cOS3VJzLlfj7wKS0ZnzDVdv3Pn2IuVeJPk9m2skfhcu5bq3wtIZyQGggr7/Iim5rH5cncyQft/kRLupcnA==}

@@ -12,8 +12,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@core/*": ["./src/core/*"],
-      "@view/*": ["./src/view/*"]
+      "@core/*": ["./src/core/*"]
     },
     "typeRoots": ["src/types/*.d.ts"]
   },

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type Route, router } from '@core/router'
+  import { type Route, router } from '@/core/router'
   import { openPage } from '@nanostores/router'
 
   let onMethodTypeBtnClick = (type: Route) => () => {

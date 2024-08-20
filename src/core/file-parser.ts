@@ -5,6 +5,7 @@ import {
   createTransaction,
   type Transaction
 } from '@core/transactions/models/transaction'
+import { formatDate } from '@core/helpers/date'
 
 export const parsedDataStore = atom<Array<Record<string, unknown>>>([])
 
@@ -48,13 +49,16 @@ export const parseCSV1 = (data: string): void => {
           sumInBalanceCurrency: sum,
           description: 'descr',
           transactionName: name,
-          date,
+          date: formatDate(date),
           currency: 'EUR'
         })
       )
     }
   })
-  loadedByFileTransactions.set([...loadedByFileTransactions.get(), ...parsedData])
+  loadedByFileTransactions.set([
+    ...loadedByFileTransactions.get(),
+    ...parsedData
+  ])
 }
 
 export const parseCSV2 = (data: string): void => {
@@ -70,7 +74,6 @@ export const parseCSV2 = (data: string): void => {
     // Split the line by comma, considering the possibility of commas inside quotes
     const fields = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g)
 
-    console.log('fields', fields)
     if (fields && fields.length >= 6) {
       // todo: make null object
       // Extract the values based on the CSV structure
@@ -95,7 +98,7 @@ export const parseCSV2 = (data: string): void => {
           id: number,
           transactionSum: csvSum,
           sumInBalanceCurrency: sum,
-          date,
+          date: formatDate(date.replaceAll('/', '.'), 'DD.MM.YYYY'),
           currency,
           type,
           transactionName: name,
@@ -106,5 +109,8 @@ export const parseCSV2 = (data: string): void => {
     }
   })
 
-  loadedByFileTransactions.set([...loadedByFileTransactions.get(), ...parsedData])
+  loadedByFileTransactions.set([
+    ...loadedByFileTransactions.get(),
+    ...parsedData
+  ])
 }

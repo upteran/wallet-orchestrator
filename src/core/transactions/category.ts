@@ -21,4 +21,6 @@ export const TRANSACTIONS_CATEGORY = {
   TAXES: 'taxes'
 } as const
 
+export const CATEGORIES_NAMES = Object.values(TRANSACTIONS_CATEGORY);
+
 export type TransactionsCategory = Values<typeof TRANSACTIONS_CATEGORY>
