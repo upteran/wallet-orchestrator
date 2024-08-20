@@ -8,12 +8,12 @@ import {
   updateTransactionInDB,
   clearTransactions
 } from '@/core/db'
-import { convertDateToCompare } from '@core/helpers/date'
-
-// helpers
-function formatToFixedNumber(value: number) {
-  return +value.toFixed(2)
-}
+import { formatToFixedNumber } from '@core/helpers/numbers'
+import {
+  groupTransactions,
+  sortTransactions,
+  listPrepear
+} from './dataProcessing'
 
 // main logic
 export const transactions = atom<Array<Transaction>>([])
@@ -57,54 +57,6 @@ export const clearAllData = () => {
   task(async () => {
     await clearTransactions()
     resetStore()
-  })
-}
-
-function groupTransactions(transactions: Transaction[]) {
-  const transactionsMap = new Map<string, Transaction>()
-
-  console.log(transactions)
-  transactions.forEach(transaction => {
-    const {
-      id,
-      transactionName,
-      category,
-      transactionSum,
-      type,
-      sumInBalanceCurrency,
-      currency,
-      description
-    } = transaction
-
-    if (transactionsMap.has(transactionName)) {
-      const existing = transactionsMap.get(transactionName)!
-      existing.transactionSum = formatToFixedNumber(
-        existing.transactionSum + transactionSum
-      )
-      existing.sumInBalanceCurrency = formatToFixedNumber(
-        existing.sumInBalanceCurrency + sumInBalanceCurrency
-      )
-    } else {
-      transactionsMap.set(transactionName, {
-        id,
-        date: transaction.date,
-        transactionName,
-        transactionSum: formatToFixedNumber(transactionSum),
-        sumInBalanceCurrency: formatToFixedNumber(sumInBalanceCurrency),
-        currency,
-        description,
-        category,
-        type
-      })
-    }
-  })
-
-  return Array.from(transactionsMap.values())
-}
-
-const sortTransactions = (transactions: Transaction[]) => {
-  return transactions.sort((a, b) => {
-    return new Date(b.date).getTime() - new Date(a.date).getTime()
   })
 }
 
@@ -218,24 +170,7 @@ export const loadedList = computed(
     startDateFilter,
     endDateFilter
   ],
-  (isEnable, groupedList, sortedList, startDate, endDate) => {
-    const list = isEnable ? groupedList : sortedList
-    return list.filter(t => {
-      const transactionDate = convertDateToCompare(t.date)
-
-      const start = startDate ? startDate : null
-      const end = endDate ? endDate : null
-
-      // Apply filtering logic
-      const isAfterStart = start
-        ? transactionDate.isAfter(start) || transactionDate.isSame(start, 'day')
-        : true
-      const isBeforeEnd = end
-        ? transactionDate.isBefore(end) || transactionDate.isSame(end, 'day')
-        : true
-      return isAfterStart && isBeforeEnd
-    })
-  }
+  listPrepear
 )
 
 export const updateLoadedTransaction = updateTransaction(
@@ -257,10 +192,14 @@ export const groupedFullList = computed(transactions, groupTransactions)
 export const sortedFullList = computed(transactions, sortTransactions)
 
 export const loadedFullList = computed(
-  [groupedTransactionsEnabled, groupedFullList, sortedFullList],
-  isEnable => {
-    return isEnable ? groupedFullList.get() : sortedFullList.get()
-  }
+  [
+    groupedTransactionsEnabled,
+    groupedFullList,
+    sortedFullList,
+    startDateFilter,
+    endDateFilter
+  ],
+  listPrepear
 )
 
 export const updateFullListTransaction = updateTransaction(true, transactions)

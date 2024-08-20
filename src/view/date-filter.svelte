@@ -4,23 +4,26 @@
   import { startDateFilter, endDateFilter } from '@/core/transactions/store'
   import { convertDateToCompare } from '@core/helpers/date'
 
-  let startDate: Date | null = $startDateFilter
-  let endDate: Date | null = $endDateFilter
+  let startDate: Date | null = null
+  let endDate: Date | null = null
 
-  function updateStartDate(selectedDate: Date | null) {
-    const [selectedDates, dateStr] = selectedDate.detail
-    console.log({ selectedDates, dateStr })
+  function updateStartDate(event: CustomEvent<unknown>) {
+    const [, dateStr] = event.detail as [unknown, string]
     startDateFilter.set(convertDateToCompare(dateStr))
   }
 
-  function updateEndDate(selectedDate: Date | null) {
-    const [selectedDates, dateStr] = selectedDate.detail
+  function updateEndDate(event: CustomEvent<unknown>) {
+    const [, dateStr] = event.detail as [unknown, string]
     endDateFilter.set(convertDateToCompare(dateStr))
+  }
+  function clearFilters() {
+    startDateFilter.set(null)
+    endDateFilter.set(null)
   }
 </script>
 
 <div>
-  <label>Start Date:</label>
+  <div>Start Date:</div>
   <Flatpickr
     options={{ dateFormat: 'd.m.Y' }}
     placeholder="Select start date"
@@ -28,7 +31,7 @@
     on:change={updateStartDate}
   />
 
-  <label>End Date:</label>
+  <div>End Date:</div>
   <Flatpickr
     options={{ dateFormat: 'd.m.Y' }}
     placeholder="Select end date"
@@ -36,3 +39,4 @@
     on:change={updateEndDate}
   />
 </div>
+<button class="outline" on:click={clearFilters}>Clear filters</button>
