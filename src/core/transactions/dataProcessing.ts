@@ -45,20 +45,18 @@ export function groupTransactions(transactions: Transaction[]) {
   return Array.from(transactionsMap.values())
 }
 
-export const sortTransactions = (transactions: Transaction[]) => {
-  return transactions.sort((a, b) => {
-    return new Date(b.date).getTime() - new Date(a.date).getTime()
-  })
+export const sortByDate = (a: Transaction, b: Transaction) => {
+  const dateA = convertDateToCompare(a.date)
+  const dateB = convertDateToCompare(b.date)
+
+  return dateB.valueOf() - dateA.valueOf()
 }
 
-export const listPrepear = (
-  isEnable: boolean,
-  groupedList: Transaction[],
-  sortedList: Transaction[],
+function filterByDates(
+  list: Transaction[],
   startDate: Dayjs | null,
   endDate: Dayjs | null
-) => {
-  const list = isEnable ? groupedList : sortedList
+) {
   return list.filter(t => {
     const transactionDate = convertDateToCompare(t.date)
 
@@ -74,4 +72,21 @@ export const listPrepear = (
       : true
     return isAfterStart && isBeforeEnd
   })
+}
+
+export const prepareTransactions = (
+  isEnable: boolean,
+  transactions: Transaction[],
+  startDate: Dayjs | null,
+  endDate: Dayjs | null
+) => {
+  const list = isEnable ? groupTransactions(transactions) : transactions
+
+  let res: Transaction[] | [] = list
+
+  if (startDate || endDate) {
+    res = filterByDates(list, startDate, endDate)
+  }
+
+  return res.sort(sortByDate)
 }

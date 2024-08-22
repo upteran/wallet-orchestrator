@@ -9,11 +9,7 @@ import {
   clearTransactions
 } from '@/core/db'
 import { formatToFixedNumber } from '@core/helpers/numbers'
-import {
-  groupTransactions,
-  sortTransactions,
-  listPrepear
-} from './dataProcessing'
+import { prepareTransactions } from './dataProcessing'
 
 // main logic
 export const transactions = atom<Array<Transaction>>([])
@@ -152,25 +148,14 @@ export const saveHistory = () =>
     await saveTransactions(t)
   })
 
-export const groupedLoadedList = computed(
-  loadedByFileTransactions,
-  groupTransactions
-)
-
-export const sortedLoadedList = computed(
-  loadedByFileTransactions,
-  sortTransactions
-)
-
 export const loadedList = computed(
   [
     groupedTransactionsEnabled,
-    groupedLoadedList,
-    sortedLoadedList,
+    loadedByFileTransactions,
     startDateFilter,
     endDateFilter
   ],
-  listPrepear
+  prepareTransactions
 )
 
 export const updateLoadedTransaction = updateTransaction(
@@ -187,19 +172,9 @@ loadedByFileTransactions.subscribe(updateBalance)
 
 // full transactions history from DB
 
-export const groupedFullList = computed(transactions, groupTransactions)
-
-export const sortedFullList = computed(transactions, sortTransactions)
-
 export const loadedFullList = computed(
-  [
-    groupedTransactionsEnabled,
-    groupedFullList,
-    sortedFullList,
-    startDateFilter,
-    endDateFilter
-  ],
-  listPrepear
+  [groupedTransactionsEnabled, transactions, startDateFilter, endDateFilter],
+  prepareTransactions
 )
 
 export const updateFullListTransaction = updateTransaction(true, transactions)

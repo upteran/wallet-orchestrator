@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { type Atom } from 'nanostores'
   import Flatpickr from 'svelte-flatpickr'
   import 'flatpickr/dist/flatpickr.css'
   import { startDateFilter, endDateFilter } from '@/core/transactions/store'
@@ -7,19 +8,24 @@
   let startDate: Date | null = null
   let endDate: Date | null = null
 
-  function updateStartDate(event: CustomEvent<unknown>) {
+  function updateDate(event: CustomEvent<unknown>, date: Atom<unknown>) {
     const [, dateStr] = event.detail as [unknown, string]
-    startDateFilter.set(convertDateToCompare(dateStr))
+    date.set(dateStr ? convertDateToCompare(dateStr) : null)
+  }
+
+  function updateStartDate(event: CustomEvent<unknown>) {
+    updateDate(event, startDateFilter)
   }
 
   function updateEndDate(event: CustomEvent<unknown>) {
-    const [, dateStr] = event.detail as [unknown, string]
-    endDateFilter.set(convertDateToCompare(dateStr))
+    updateDate(event, endDateFilter)
   }
   function clearFilters() {
     startDateFilter.set(null)
     endDateFilter.set(null)
   }
+  $: startDate = $startDateFilter?.toDate() || null
+  $: endDate = $endDateFilter?.toDate() || null
 </script>
 
 <div>
