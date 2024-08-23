@@ -1,8 +1,7 @@
 <script lang="ts">
-  import FileReader from '@/view/file-reader.svelte'
-  import TransactionLoadedTable from '@/view/transaction-loaded-table.svelte'
-  import Checkbox from '@/view/checkbox.svelte'
-  import DataSaveButton from '@/view/data-save-button.svelte'
+  import FileReader from '@/ui/file-reader.svelte'
+  import TransactionLoadedTable from '@/ui/transaction-loaded-table.svelte'
+  import DataSaveButton from '@/ui/data-save-button.svelte'
   import {
     groupedTransactionsEnabled,
     toggleGroupedTransactions

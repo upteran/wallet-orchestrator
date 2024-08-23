@@ -5,7 +5,7 @@
     updateFullTransactionsByName
   } from '@core/transactions/store'
   import { TRANSACTIONS_CATEGORY } from '@core/transactions/category'
-  import TransactionsTable from '@/view/transactions-table.svelte'
+  import TransactionsTable from '@/ui/transactions-table.svelte'
 
   let transactionName = ''
   let transactionSum: number | null = null

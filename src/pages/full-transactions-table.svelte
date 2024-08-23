@@ -5,7 +5,7 @@
     balanceByFullHistory,
     loadedFullList
   } from '@core/transactions/store'
-  import TransactionsTable from '@/view/transactions-table.svelte'
+  import TransactionsTable from '@/ui/transactions-table.svelte'
   // Clear all transactions
   const handleClearAllTransactions = () => {
     clearAllData()

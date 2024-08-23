@@ -1,7 +1,12 @@
 <script lang="ts">
   import type { Transaction } from '@/core/transactions/models/transaction'
   import { CATEGORIES_NAMES } from '@/core/transactions/category'
-  import DateFilter from '@/view/date-filter.svelte'
+  import DateFilter from '@/ui/date-filter.svelte'
+  import {
+    groupedTransactionsEnabled,
+    toggleGroupedTransactions
+  } from '@core/transactions/store'
+  import Checkbox from '@/ui/checkbox.svelte'
 
   export let transactions: readonly Transaction[]
   export let updateTransactionsByName: (
@@ -39,6 +44,10 @@
 </script>
 
 <DateFilter />
+<Checkbox
+  clickHandler={toggleGroupedTransactions}
+  toggler={$groupedTransactionsEnabled}
+/>
 <div class="transaction-table-outer">
   {#if transactions.length > 0}
     <table class="transaction-table">
