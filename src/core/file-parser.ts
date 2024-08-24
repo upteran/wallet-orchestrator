@@ -49,8 +49,7 @@ export const parseCSV1 = (data: string): void => {
           sumInBalanceCurrency: sum,
           description: 'descr',
           transactionName: name,
-          date: formatDate(date),
-          currency: 'EUR'
+          date: formatDate(date)
         })
       )
     }
@@ -79,7 +78,7 @@ export const parseCSV2 = (data: string): void => {
       // Extract the values based on the CSV structure
       const number = fields[0]
       const date = fields[2]
-      const currency = fields[3]
+      // const currency = fields[3]
       const income = fields[4]
         ? parseFloat(fields[4].replace(/"/g, '').replace(/,/g, ''))
         : 0
@@ -99,7 +98,6 @@ export const parseCSV2 = (data: string): void => {
           transactionSum: csvSum,
           sumInBalanceCurrency: sum,
           date: formatDate(date.replaceAll('/', '.'), 'DD.MM.YYYY'),
-          currency,
           type,
           transactionName: name,
           description,

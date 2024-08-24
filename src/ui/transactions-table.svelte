@@ -59,7 +59,6 @@
           <th>Sum (CUR)</th>
           <th>sum (EUR)</th>
           <th>Type</th>
-          <th>Currency</th>
           <th>Description</th>
           <th>Category</th>
           <th>Actions</th>
@@ -67,8 +66,11 @@
       </thead>
       <tbody>
         {#each transactions as transaction}
-          <tr>
-            <td>{transaction.id}</td>
+          <tr
+            class:income={transaction.type === 'income'}
+            class:outcome={transaction.type === 'outcome'}
+          >
+            <td class="truncate">{transaction.id}</td>
             <td>{transaction.date}</td>
             <td>
               {#if editingTransactionId === transaction.id}
@@ -80,7 +82,6 @@
             <td>{transaction.transactionSum}</td>
             <td>{transaction.sumInBalanceCurrency}</td>
             <td>{transaction.type}</td>
-            <td>{transaction.currency}</td>
             <td>{transaction.description}</td>
             <td>
               {#if editingTransactionId === transaction.id}
@@ -118,5 +119,17 @@
   .transaction-table-outer {
     max-width: 100%;
     overflow-y: auto;
+  }
+
+  .truncate {
+    display: inline-block;
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  :global(.income td) {
+    background: #2a3242;
   }
 </style>

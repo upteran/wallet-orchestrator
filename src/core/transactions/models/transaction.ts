@@ -9,7 +9,6 @@ export interface Transaction {
   sumInBalanceCurrency: number
   description: string
   category: string
-  currency: string
   type: 'income' | 'outcome'
 }
 
@@ -20,7 +19,6 @@ export function createTransaction({
   transactionSum,
   sumInBalanceCurrency,
   category,
-  currency,
   description,
   type
 }:
@@ -33,7 +31,6 @@ export function createTransaction({
       sumInBalanceCurrency: Transaction['sumInBalanceCurrency']
       description: Transaction['description']
       category: Transaction['category']
-      currency: Transaction['currency']
       type: Transaction['type']
     }) {
   return {
@@ -43,7 +40,6 @@ export function createTransaction({
     transactionSum,
     sumInBalanceCurrency,
     category,
-    currency,
     description,
     type
   }
