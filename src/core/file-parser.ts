@@ -1,13 +1,14 @@
-import { atom } from 'nanostores'
-import { loadedByFileTransactions } from './transactions/store'
+import {
+  loadedByFileTransactions,
+  transactionsUpdateKeys
+} from './transactions/store'
 import { convertCurrency } from './currency'
 import {
   createTransaction,
-  type Transaction
+  type Transaction,
+  type TransactionUpdatedData
 } from '@core/transactions/models/transaction'
 import { formatDate } from '@core/helpers/date'
-
-export const parsedDataStore = atom<Array<Record<string, unknown>>>([])
 
 const csvParsers: Record<string, (data: string) => void> = {
   csv1: (data: string) => parseCSV1(data),
@@ -24,6 +25,24 @@ export const parseCSV = (data: string, csvType: string): void => {
   }
 }
 
+function updateByExistTransaction({
+  systemKey,
+  updatedData
+}: {
+  systemKey: string
+  updatedData: Record<string, TransactionUpdatedData> | null
+}) {
+  let name = systemKey
+  let category = 'none'
+
+  if (updatedData && updatedData[systemKey]) {
+    name = updatedData[systemKey].transactionName ?? systemKey
+    category = updatedData[systemKey].category ?? 'none'
+  }
+
+  return { name, category }
+}
+
 export const parseCSV1 = (data: string): void => {
   const parsedData: Transaction[] = []
 
@@ -31,8 +50,10 @@ export const parseCSV1 = (data: string): void => {
 
   const transactionsRow = rows.slice(4) // Skip the first 3 rows
 
+  const updatedData = transactionsUpdateKeys.get()
+
   transactionsRow.forEach(t => {
-    const [date, name, ...extra] = t
+    const [date, systemKey, ...extra] = t
 
     if (extra.length >= 6) {
       console.log('extra', extra)
@@ -40,12 +61,18 @@ export const parseCSV1 = (data: string): void => {
       const sum = parseFloat(extra[2])
       const type = extra[3] === 'Дт' ? 'outcome' : 'income'
 
+      const { name, category } = updateByExistTransaction({
+        systemKey,
+        updatedData
+      })
+
       parsedData.push(
         createTransaction({
           id,
-          category: 'none',
+          category,
           type,
           transactionSum: sum,
+          systemKey,
           sumInBalanceCurrency: sum,
           description: 'descr',
           transactionName: name,
@@ -69,6 +96,9 @@ export const parseCSV2 = (data: string): void => {
 
   const lines = rows.slice(10)
   // Loop through each line and split it into fields
+
+  const updatedData = transactionsUpdateKeys.get()
+
   lines.forEach(line => {
     // Split the line by comma, considering the possibility of commas inside quotes
     const fields = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g)
@@ -85,23 +115,29 @@ export const parseCSV2 = (data: string): void => {
       const outcome = fields[4]
         ? parseFloat(fields[5].replace(/"/g, '').replace(/,/g, ''))
         : 0
-      const name = fields[7]
+      const systemKey = fields[7]
       const description = fields[8]
 
       const csvSum = income || outcome
       const sum = currencyConverter(csvSum)
       const type = outcome ? 'outcome' : 'income'
 
+      const { name, category } = updateByExistTransaction({
+        systemKey,
+        updatedData
+      })
+
       parsedData.push(
         createTransaction({
           id: number,
           transactionSum: csvSum,
           sumInBalanceCurrency: sum,
-          date: formatDate(date.replaceAll('/', '.'), 'DD.MM.YYYY'),
+          date: formatDate(date, 'DD/MM/YYYY'),
           type,
           transactionName: name,
+          systemKey,
           description,
-          category: ''
+          category
         })
       )
     }

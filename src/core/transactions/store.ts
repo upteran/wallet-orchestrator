@@ -1,18 +1,25 @@
 import { atom, computed, onMount, task, type Atom } from 'nanostores'
 import { type Dayjs } from 'dayjs'
-import { type Transaction, createTransaction } from './models/transaction'
+import {
+  type Transaction,
+  createTransaction,
+  type TransactionsUpdatedData
+} from './models/transaction'
 import {
   initDB,
   loadTransactions,
   saveTransactions,
   updateTransactionInDB,
-  clearTransactions
+  clearTransactions,
+  getAllUpdatedTransactions,
+  saveUpdatedTransaction
 } from '@/core/db'
 import { formatToFixedNumber } from '@core/helpers/numbers'
 import { prepareTransactions } from './dataProcessing'
 
 // main logic
 export const transactions = atom<Array<Transaction>>([])
+export const transactionsUpdateKeys = atom<TransactionsUpdatedData | null>(null)
 export const loadedByFileTransactions = atom<Array<Transaction>>([])
 export const groupedTransactionsEnabled = atom<boolean>(false)
 // Filters
@@ -31,13 +38,34 @@ onMount(transactions, () => {
   task(async () => {
     const db = await initDB()
     if (db) {
-      let t = []
+      let t: Transaction[] | [] = []
       try {
         t = await loadTransactions()
       } catch (error) {
         console.log('Error loading transactions', error)
       }
       transactions.set(t)
+    }
+  })
+
+  return () => {
+    console.log('Unmounted')
+    resetStore()
+  }
+})
+
+onMount(loadedByFileTransactions, () => {
+  console.log('Mounted loadedByFileTransactions')
+  task(async () => {
+    const db = await initDB()
+    if (db) {
+      let k: TransactionsUpdatedData | null = {}
+      try {
+        k = (await getAllUpdatedTransactions()) || {}
+      } catch (error) {
+        console.log('Error loading transactions', error)
+      }
+      transactionsUpdateKeys.set(k)
     }
   })
 
@@ -56,41 +84,21 @@ export const clearAllData = () => {
   })
 }
 
-function updateTransaction(
-  updateDb = true,
-  list: Atom<Transaction[]>
-): (id: string, newName: string, newCategory: string) => void {
-  return function (id: string, newName: string, newCategory: string) {
-    const t = list.get()
-
-    const updatedTransactions = t.map(transaction => {
-      if (transaction.id === id) {
-        const updatedTransaction = {
-          ...transaction,
-          transactionName: newName,
-          category: newCategory
-        }
-
-        if (updateDb) {
-          // Save the updated transaction to IndexedDB
-          updateTransactionInDB(updatedTransaction)
-        }
-
-        return updatedTransaction
-      }
-
-      return transaction
-    })
-
-    transactions.set(updatedTransactions)
-  }
-}
-
 function updateTransactionsByName(
   updateDb = true,
   list: Atom<Transaction[]>
-): (originalName: string, newName: string, newCategory: string) => void {
-  return function (originalName: string, newName: string, newCategory: string) {
+): (
+  systemKey: string,
+  originalName: string,
+  newName: string,
+  newCategory: string
+) => void {
+  return function (
+    systemKey: string,
+    originalName: string,
+    newName: string,
+    newCategory: string
+  ) {
     const t = list.get()
 
     const updatedTransactions = t.map(transaction => {
@@ -112,6 +120,10 @@ function updateTransactionsByName(
       return transaction
     })
 
+    saveUpdatedTransaction(systemKey, {
+      transactionName: newName,
+      category: newCategory
+    })
     list.set(updatedTransactions)
   }
 }
@@ -158,11 +170,6 @@ export const loadedList = computed(
   prepareTransactions
 )
 
-export const updateLoadedTransaction = updateTransaction(
-  false,
-  loadedByFileTransactions
-)
-
 export const updateLoadedTransactionsByName = updateTransactionsByName(
   false,
   loadedByFileTransactions
@@ -176,8 +183,6 @@ export const loadedFullList = computed(
   [groupedTransactionsEnabled, transactions, startDateFilter, endDateFilter],
   prepareTransactions
 )
-
-export const updateFullListTransaction = updateTransaction(true, transactions)
 
 export const updateFullTransactionsByName = updateTransactionsByName(
   true,
@@ -211,7 +216,7 @@ export function saveManualTransaction({
     sumInBalanceCurrency: transactionSum,
     description: 'string',
     category,
-    currency: 'EUR'
+    systemKey: transactionName
   })
 
   // Update commonTransactionsStore

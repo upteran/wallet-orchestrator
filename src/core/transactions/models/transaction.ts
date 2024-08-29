@@ -3,6 +3,7 @@ import { formatDate } from '@core/helpers/date'
 
 export interface Transaction {
   id: string | number
+  systemKey: string
   date: string
   transactionName: string
   transactionSum: number
@@ -12,29 +13,39 @@ export interface Transaction {
   type: 'income' | 'outcome'
 }
 
+export interface TransactionUpdatedData {
+  transactionName?: string
+  category?: string
+}
+
+export type TransactionsUpdatedData = Record<string, TransactionUpdatedData>
+
+type CreateTransactionParams = Partial<Pick<Transaction, 'id' | 'date'>> &
+  Pick<
+    Transaction,
+    | 'systemKey'
+    | 'transactionName'
+    | 'transactionSum'
+    | 'sumInBalanceCurrency'
+    | 'category'
+    | 'description'
+    | 'type'
+  >
+
 export function createTransaction({
   id = nanoid(),
   date = formatDate(new Date().toISOString()),
+  systemKey,
   transactionName,
   transactionSum,
   sumInBalanceCurrency,
   category,
   description,
   type
-}:
-  | Transaction
-  | {
-      id?: Transaction['id']
-      date?: Transaction['date']
-      transactionName: Transaction['transactionName']
-      transactionSum: Transaction['transactionSum']
-      sumInBalanceCurrency: Transaction['sumInBalanceCurrency']
-      description: Transaction['description']
-      category: Transaction['category']
-      type: Transaction['type']
-    }) {
+}: CreateTransactionParams): Transaction {
   return {
     id,
+    systemKey,
     date,
     transactionName,
     transactionSum,

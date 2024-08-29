@@ -15,8 +15,8 @@ export function groupTransactions(transactions: Transaction[]) {
       transactionSum,
       type,
       sumInBalanceCurrency,
-      currency,
-      description
+      description,
+      systemKey
     } = transaction
 
     if (transactionsMap.has(transactionName)) {
@@ -32,9 +32,9 @@ export function groupTransactions(transactions: Transaction[]) {
         id,
         date: transaction.date,
         transactionName,
+        systemKey,
         transactionSum: formatToFixedNumber(transactionSum),
         sumInBalanceCurrency: formatToFixedNumber(sumInBalanceCurrency),
-        currency,
         description,
         category,
         type

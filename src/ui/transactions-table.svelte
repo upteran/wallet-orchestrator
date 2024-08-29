@@ -10,6 +10,7 @@
 
   export let transactions: readonly Transaction[]
   export let updateTransactionsByName: (
+    systemKey: string,
     originalName: string,
     newName: string,
     newCategory: string
@@ -19,8 +20,10 @@
   let editingTransactionName: string = ''
   let editingCategory: string = ''
   let originalTransactionName: string = ''
+  let systemKey: string = ''
 
   const startEditing = (transaction: Transaction) => {
+    systemKey = transaction.systemKey
     editingTransactionId = transaction.id
     editingTransactionName = transaction.transactionName
     originalTransactionName = transaction.transactionName
@@ -30,6 +33,7 @@
   const saveChanges = () => {
     if (editingTransactionId) {
       updateTransactionsByName(
+        systemKey,
         originalTransactionName,
         editingTransactionName,
         editingCategory
