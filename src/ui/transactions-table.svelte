@@ -6,7 +6,7 @@
     groupedTransactionsEnabled,
     toggleGroupedTransactions
   } from '@core/transactions/store'
-  import Checkbox from '@/ui/checkbox.svelte'
+  import GroupCheckbox from '@/ui/group-checkbox.svelte'
 
   export let transactions: readonly Transaction[]
   export let updateTransactionsByName: (
@@ -48,7 +48,7 @@
 </script>
 
 <DateFilter />
-<Checkbox
+<GroupCheckbox
   clickHandler={toggleGroupedTransactions}
   toggler={$groupedTransactionsEnabled}
 />
