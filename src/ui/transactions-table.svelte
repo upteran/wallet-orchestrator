@@ -128,6 +128,7 @@
   .truncate {
     display: inline-block;
     max-width: 100px;
+    left: 0px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
