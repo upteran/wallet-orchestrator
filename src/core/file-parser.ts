@@ -81,6 +81,8 @@ export const parseCSV1 = (data: string): void => {
       )
     }
   })
+
+  console.log(parsedData)
   loadedByFileTransactions.set([
     ...loadedByFileTransactions.get(),
     ...parsedData

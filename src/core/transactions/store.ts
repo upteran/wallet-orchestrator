@@ -12,7 +12,8 @@ import {
   updateTransactionInDB,
   clearTransactions,
   getAllUpdatedTransactions,
-  saveUpdatedTransaction
+  saveUpdatedTransaction,
+  clearUpdatedKeys
 } from '@/core/db'
 import { formatToFixedNumber } from '@core/helpers/numbers'
 import { prepareTransactions } from './dataProcessing'
@@ -22,6 +23,8 @@ export const transactions = atom<Array<Transaction>>([])
 export const transactionsUpdateKeys = atom<TransactionsUpdatedData | null>(null)
 export const loadedByFileTransactions = atom<Array<Transaction>>([])
 export const groupedTransactionsEnabled = atom<boolean>(false)
+export const sortBySumType = atom<string | null>(null)
+export const sortBySumStep = atom<number>(0)
 // Filters
 export const startDateFilter = atom<Dayjs | null>(null)
 export const endDateFilter = atom<Dayjs | null>(null)
@@ -76,10 +79,33 @@ onMount(loadedByFileTransactions, () => {
 })
 
 // functions for all kinds of transactions
+const sortKeyMap = {
+  sum: {
+    0: null,
+    1: 'min',
+    2: 'max'
+  }
+}
+
+export const sortTransactionsBySum = () => {
+  const c = sortBySumStep.get()
+  sortBySumStep.set(c + 1 > 2 ? 0 : c + 1)
+}
+
+sortBySumStep.listen(value => {
+  sortBySumType.set(sortKeyMap.sum[value])
+})
 
 export const clearAllData = () => {
   task(async () => {
     await clearTransactions()
+    resetStore()
+  })
+}
+
+export const clearUpdatedTransactionsData = () => {
+  task(async () => {
+    await clearUpdatedKeys()
     resetStore()
   })
 }
@@ -165,7 +191,8 @@ export const loadedList = computed(
     groupedTransactionsEnabled,
     loadedByFileTransactions,
     startDateFilter,
-    endDateFilter
+    endDateFilter,
+    sortBySumType
   ],
   prepareTransactions
 )
@@ -180,7 +207,13 @@ loadedByFileTransactions.subscribe(updateBalance)
 // full transactions history from DB
 
 export const loadedFullList = computed(
-  [groupedTransactionsEnabled, transactions, startDateFilter, endDateFilter],
+  [
+    groupedTransactionsEnabled,
+    transactions,
+    startDateFilter,
+    endDateFilter,
+    sortBySumType
+  ],
   prepareTransactions
 )
 

@@ -11,7 +11,7 @@
 
   const handleFileUpload = (event: Event): void => {
     if (!selectedCsvType) {
-      alert('Please select a CSV type.')
+      console.log('Please select a CSV type.')
       return
     }
 

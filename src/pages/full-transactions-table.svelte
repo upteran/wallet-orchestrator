@@ -10,6 +10,10 @@
   const handleClearAllTransactions = () => {
     clearAllData()
   }
+
+  // let transactions = []
+
+  // $: transactions = loadedFullList.get()
 </script>
 
 <TransactionsTable

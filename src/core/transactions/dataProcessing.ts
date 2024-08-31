@@ -6,7 +6,6 @@ import { formatToFixedNumber } from '@core/helpers/numbers'
 export function groupTransactions(transactions: Transaction[]) {
   const transactionsMap = new Map<string, Transaction>()
 
-  console.log(transactions)
   transactions.forEach(transaction => {
     const {
       id,
@@ -21,9 +20,8 @@ export function groupTransactions(transactions: Transaction[]) {
 
     if (transactionsMap.has(transactionName)) {
       const existing = transactionsMap.get(transactionName)!
-      existing.transactionSum = formatToFixedNumber(
-        existing.transactionSum + transactionSum
-      )
+      // todo: upd type or logic
+      existing.transactionSum = 'merged'
       existing.sumInBalanceCurrency = formatToFixedNumber(
         existing.sumInBalanceCurrency + sumInBalanceCurrency
       )
@@ -52,6 +50,53 @@ export const sortByDate = (a: Transaction, b: Transaction) => {
   return dateB.valueOf() - dateA.valueOf()
 }
 
+const sortBySumAsc = (a: Transaction, b: Transaction) => {
+  return a.sumInBalanceCurrency - b.sumInBalanceCurrency;
+};
+
+const sortBySumDesc = (a: Transaction, b: Transaction) => {
+  return b.sumInBalanceCurrency - a.sumInBalanceCurrency;
+};
+
+
+// Sort Types Map
+const sortFunctionsMap: Record<string, (a: Transaction, b: Transaction) => number> = {
+  date: sortByDate,
+  min: sortBySumAsc,
+  max: sortBySumDesc,
+};
+
+// Default sort key
+const defaultSortKey = 'date';
+
+// Sort Transactions Function
+export const sortTransactions = (
+  transactions: Transaction[],
+  sortKey: string | null
+): Transaction[] => {
+  const sortFunction = sortFunctionsMap[sortKey || defaultSortKey];
+  return transactions.sort(sortFunction);
+};
+
+export const sortBySum = (
+  transactions: Transaction[],
+  sortSumType: string | null
+): Transaction[] => {
+  if (!sortSumType) return transactions
+
+  if (sortSumType === 'min') {
+    return transactions.sort(
+      (a, b) => a.sumInBalanceCurrency - b.sumInBalanceCurrency
+    )
+  } else if (sortSumType === 'max') {
+    return transactions.sort(
+      (a, b) => b.sumInBalanceCurrency - a.sumInBalanceCurrency
+    )
+  }
+
+  return transactions
+}
+
 function filterByDates(
   list: Transaction[],
   startDate: Dayjs | null,
@@ -78,15 +123,16 @@ export const prepareTransactions = (
   isEnable: boolean,
   transactions: Transaction[],
   startDate: Dayjs | null,
-  endDate: Dayjs | null
+  endDate: Dayjs | null,
+  sortSumType: string | null
 ) => {
   const list = isEnable ? groupTransactions(transactions) : transactions
 
-  let res: Transaction[] | [] = list
+  // Filter by dates
+  const filteredTransactions = (startDate || endDate)
+    ? filterByDates(list, startDate, endDate)
+    : list;
 
-  if (startDate || endDate) {
-    res = filterByDates(list, startDate, endDate)
-  }
-
-  return res.sort(sortByDate)
+  // Sort transactions by the selected sort key
+  return [...sortTransactions(filteredTransactions, sortSumType) || []];
 }

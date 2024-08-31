@@ -90,6 +90,10 @@ export async function clearTransactions(): Promise<void> {
   await db.clear(UPDATED_DATA_STORE)
 }
 
+export async function clearUpdatedKeys(): Promise<void> {
+  await db.clear(UPDATED_DATA_STORE)
+}
+
 // transactions updated data
 export async function saveUpdatedTransaction(
   systemKey: string,

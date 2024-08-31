@@ -3,12 +3,14 @@
     balanceByLoadedData,
     resetStore,
     updateLoadedTransactionsByName,
-    loadedList
+    loadedList,
+    clearUpdatedTransactionsData
   } from '@/core/transactions/store'
   import TransactionsTable from './transactions-table.svelte'
   // Clear all transactions
   const handleClearAllTransactions = () => {
     resetStore()
+    clearUpdatedTransactionsData()
   }
 </script>
 

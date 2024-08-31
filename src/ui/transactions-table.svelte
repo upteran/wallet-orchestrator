@@ -4,7 +4,8 @@
   import DateFilter from '@/ui/date-filter.svelte'
   import {
     groupedTransactionsEnabled,
-    toggleGroupedTransactions
+    toggleGroupedTransactions,
+    sortTransactionsBySum
   } from '@core/transactions/store'
   import GroupCheckbox from '@/ui/group-checkbox.svelte'
 
@@ -45,6 +46,11 @@
   const cancelEditing = () => {
     editingTransactionId = null
   }
+
+  const sortBySum = () => {
+    sortTransactionsBySum()
+    console.log('sort')
+  }
 </script>
 
 <DateFilter />
@@ -61,7 +67,7 @@
           <th>date</th>
           <th>Name</th>
           <th>Sum (CUR)</th>
-          <th>sum (EUR)</th>
+          <th on:click={sortBySum}>sum (EUR) <span>^</span></th>
           <th>Type</th>
           <th>Description</th>
           <th>Category</th>
