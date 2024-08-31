@@ -5,9 +5,10 @@
   import {
     groupedTransactionsEnabled,
     toggleGroupedTransactions,
-    sortTransactionsBySum
+    sortTransactionsBySum,
   } from '@core/transactions/store'
   import GroupCheckbox from '@/ui/group-checkbox.svelte'
+  import Category from '@/ui/category.svelte'
 
   export let transactions: readonly Transaction[]
   export let updateTransactionsByName: (
@@ -60,6 +61,7 @@
 />
 <div class="transaction-table-outer">
   {#if transactions.length > 0}
+    <Category />
     <table class="transaction-table">
       <thead>
         <tr>

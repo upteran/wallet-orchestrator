@@ -1,10 +1,18 @@
-import { atom, computed, onMount, task, type Atom } from 'nanostores'
+import {
+  atom,
+  computed,
+  onMount,
+  task,
+  type Atom,
+  type ReadableAtom
+} from 'nanostores'
 import { type Dayjs } from 'dayjs'
 import {
   type Transaction,
   createTransaction,
   type TransactionsUpdatedData
 } from './models/transaction'
+import type { Category } from '@core/transactions/models/category'
 import {
   initDB,
   loadTransactions,
@@ -17,6 +25,7 @@ import {
 } from '@/core/db'
 import { formatToFixedNumber } from '@core/helpers/numbers'
 import { prepareTransactions } from './dataProcessing'
+import { nanoid } from 'nanoid'
 
 // main logic
 export const transactions = atom<Array<Transaction>>([])
@@ -260,3 +269,20 @@ export function saveManualTransaction({
     await saveTransactions([newTransaction])
   })
 }
+
+// categories
+export const categories: ReadableAtom<Category[]> = computed(
+  [loadedFullList],
+  transactions => {
+    const uniqueCategories = new Set<string>()
+
+    transactions.forEach(({ category }) => {
+      uniqueCategories.add(category)
+    })
+
+    return Array.from(uniqueCategories).map(category => ({
+      id: nanoid(),
+      name: category
+    }))
+  }
+)
