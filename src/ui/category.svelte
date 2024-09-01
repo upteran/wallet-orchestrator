@@ -1,15 +1,31 @@
 <script lang="ts">
   import {
-    categories
+    categories,
+    filterByCategory,
+    activeCategoryFilter
   } from '@core/transactions/store'
+  import { type TransactionsCategory } from '@core/transactions/category'
+
+  const onCategoryClick = (name: TransactionsCategory) => () => {
+    filterByCategory(name)
+  }
+  const onClearCategoryClick = () => {
+    filterByCategory(null)
+  }
 </script>
 
 <div class="category-list">
   {#each $categories as category (category.id)}
-    <div class="category-item">
+    <button
+      class="outline {$activeCategoryFilter === category.name
+        ? 'contrast'
+        : ''}"
+      on:click={onCategoryClick(category.name)}
+    >
       {category.name}
-    </div>
+    </button>
   {/each}
+  <button on:click={onClearCategoryClick}>clear</button>
 </div>
 
 <style>
@@ -17,11 +33,5 @@
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-  }
-
-  .category-item {
-    padding: 5px 10px;
-    border: 2px solid #000;
-    border-radius: 4px;
   }
 </style>

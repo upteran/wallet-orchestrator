@@ -26,6 +26,7 @@ import {
 import { formatToFixedNumber } from '@core/helpers/numbers'
 import { prepareTransactions } from './dataProcessing'
 import { nanoid } from 'nanoid'
+import type { TransactionsCategory } from '@core/transactions/category'
 
 // main logic
 export const transactions = atom<Array<Transaction>>([])
@@ -34,6 +35,7 @@ export const loadedByFileTransactions = atom<Array<Transaction>>([])
 export const groupedTransactionsEnabled = atom<boolean>(false)
 export const sortBySumType = atom<string | null>(null)
 export const sortBySumStep = atom<number>(0)
+export const activeCategoryFilter = atom<TransactionsCategory | null>(null)
 // Filters
 export const startDateFilter = atom<Dayjs | null>(null)
 export const endDateFilter = atom<Dayjs | null>(null)
@@ -102,6 +104,7 @@ export const sortTransactionsBySum = () => {
 }
 
 sortBySumStep.listen(value => {
+  // @ts-expect-error fixme
   sortBySumType.set(sortKeyMap.sum[value])
 })
 
@@ -201,7 +204,8 @@ export const loadedList = computed(
     loadedByFileTransactions,
     startDateFilter,
     endDateFilter,
-    sortBySumType
+    sortBySumType,
+    activeCategoryFilter
   ],
   prepareTransactions
 )
@@ -221,7 +225,8 @@ export const loadedFullList = computed(
     transactions,
     startDateFilter,
     endDateFilter,
-    sortBySumType
+    sortBySumType,
+    activeCategoryFilter
   ],
   prepareTransactions
 )
@@ -274,7 +279,7 @@ export function saveManualTransaction({
 export const categories: ReadableAtom<Category[]> = computed(
   [loadedFullList],
   transactions => {
-    const uniqueCategories = new Set<string>()
+    const uniqueCategories = new Set<TransactionsCategory>()
 
     transactions.forEach(({ category }) => {
       uniqueCategories.add(category)
@@ -286,3 +291,7 @@ export const categories: ReadableAtom<Category[]> = computed(
     }))
   }
 )
+
+export const filterByCategory = (name: TransactionsCategory | null) => {
+  activeCategoryFilter.set(name)
+}

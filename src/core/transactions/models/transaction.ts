@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid'
 import { formatDate } from '@core/helpers/date'
+import type {TransactionsCategory} from "@core/transactions/category";
 
 export interface Transaction {
   id: string | number
@@ -9,7 +10,7 @@ export interface Transaction {
   transactionSum: number
   sumInBalanceCurrency: number
   description: string
-  category: string
+  category: TransactionsCategory
   type: 'income' | 'outcome'
 }
 

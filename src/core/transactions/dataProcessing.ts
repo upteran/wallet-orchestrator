@@ -2,6 +2,7 @@ import type { Transaction } from '@core/transactions/models/transaction'
 import type { Dayjs } from 'dayjs'
 import { convertDateToCompare } from '@core/helpers/date'
 import { formatToFixedNumber } from '@core/helpers/numbers'
+import type { TransactionsCategory } from '@core/transactions/category'
 
 export function groupTransactions(transactions: Transaction[]) {
   const transactionsMap = new Map<string, Transaction>()
@@ -20,7 +21,7 @@ export function groupTransactions(transactions: Transaction[]) {
 
     if (transactionsMap.has(transactionName)) {
       const existing = transactionsMap.get(transactionName)!
-      // todo: upd type or logic
+      // @ts-expect-error todo: upd type or logic
       existing.transactionSum = 'merged'
       existing.sumInBalanceCurrency = formatToFixedNumber(
         existing.sumInBalanceCurrency + sumInBalanceCurrency
@@ -51,32 +52,34 @@ export const sortByDate = (a: Transaction, b: Transaction) => {
 }
 
 const sortBySumAsc = (a: Transaction, b: Transaction) => {
-  return a.sumInBalanceCurrency - b.sumInBalanceCurrency;
-};
+  return a.sumInBalanceCurrency - b.sumInBalanceCurrency
+}
 
 const sortBySumDesc = (a: Transaction, b: Transaction) => {
-  return b.sumInBalanceCurrency - a.sumInBalanceCurrency;
-};
-
+  return b.sumInBalanceCurrency - a.sumInBalanceCurrency
+}
 
 // Sort Types Map
-const sortFunctionsMap: Record<string, (a: Transaction, b: Transaction) => number> = {
+const sortFunctionsMap: Record<
+  string,
+  (a: Transaction, b: Transaction) => number
+> = {
   date: sortByDate,
   min: sortBySumAsc,
-  max: sortBySumDesc,
-};
+  max: sortBySumDesc
+}
 
 // Default sort key
-const defaultSortKey = 'date';
+const defaultSortKey = 'date'
 
 // Sort Transactions Function
 export const sortTransactions = (
   transactions: Transaction[],
   sortKey: string | null
 ): Transaction[] => {
-  const sortFunction = sortFunctionsMap[sortKey || defaultSortKey];
-  return transactions.sort(sortFunction);
-};
+  const sortFunction = sortFunctionsMap[sortKey || defaultSortKey]
+  return transactions.sort(sortFunction)
+}
 
 export const sortBySum = (
   transactions: Transaction[],
@@ -119,20 +122,33 @@ function filterByDates(
   })
 }
 
+function filterByCategoryName({
+  categoryName,
+  transactions
+}: {
+  categoryName: TransactionsCategory
+  transactions: Transaction[]
+}) {
+  return transactions.filter(({ category }) => category === categoryName)
+}
+
 export const prepareTransactions = (
-  isEnable: boolean,
+  isGroupingEnable: boolean,
   transactions: Transaction[],
   startDate: Dayjs | null,
   endDate: Dayjs | null,
-  sortSumType: string | null
+  sortSumType: string | null,
+  activeCategoryFilter: TransactionsCategory | null
 ) => {
-  const list = isEnable ? groupTransactions(transactions) : transactions
+  const t = activeCategoryFilter
+    ? filterByCategoryName({ categoryName: activeCategoryFilter, transactions })
+    : transactions
+  const list = isGroupingEnable ? groupTransactions(t) : t
 
   // Filter by dates
-  const filteredTransactions = (startDate || endDate)
-    ? filterByDates(list, startDate, endDate)
-    : list;
+  const filteredTransactions =
+    startDate || endDate ? filterByDates(list, startDate, endDate) : list
 
   // Sort transactions by the selected sort key
-  return [...sortTransactions(filteredTransactions, sortSumType) || []];
+  return [...(sortTransactions(filteredTransactions, sortSumType) || [])]
 }
